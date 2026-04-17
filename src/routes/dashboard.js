@@ -9,26 +9,32 @@ router.get("/", async (req, res) => {
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
 
+  const scope = { restaurant: req.user.restaurant };
+
   const [todayAgg, weekAgg, totalOrders, heldOrders, productCount, categoryCount, recentOrders] =
     await Promise.all([
       Order.aggregate([
-        { $match: { status: "completed", createdAt: { $gte: startOfDay } } },
+        { $match: { ...scope, status: "completed", createdAt: { $gte: startOfDay } } },
         { $group: { _id: null, sales: { $sum: "$total" }, count: { $sum: 1 } } },
       ]),
       Order.aggregate([
         {
           $match: {
+            ...scope,
             status: "completed",
             createdAt: { $gte: new Date(Date.now() - 7 * 24 * 3600 * 1000) },
           },
         },
         { $group: { _id: null, sales: { $sum: "$total" }, count: { $sum: 1 } } },
       ]),
-      Order.countDocuments({ status: "completed" }),
-      Order.countDocuments({ status: "held" }),
-      Product.countDocuments({ active: true }),
-      Category.countDocuments({ active: true }),
-      Order.find({ status: "completed" }).sort({ createdAt: -1 }).limit(8).lean(),
+      Order.countDocuments({ ...scope, status: "completed" }),
+      Order.countDocuments({ ...scope, status: "held" }),
+      Product.countDocuments({ ...scope, active: true }),
+      Category.countDocuments({ ...scope, active: true }),
+      Order.find({ ...scope, status: "completed" })
+        .sort({ createdAt: -1 })
+        .limit(8)
+        .lean(),
     ]);
 
   res.render("dashboard/index", {

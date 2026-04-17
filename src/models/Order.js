@@ -13,7 +13,13 @@ const OrderItemSchema = new mongoose.Schema(
 
 const OrderSchema = new mongoose.Schema(
   {
-    invoiceNo: { type: String, unique: true, index: true },
+    invoiceNo: { type: String, index: true },
+    restaurant: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Restaurant",
+      required: true,
+      index: true,
+    },
     items: { type: [OrderItemSchema], default: [] },
     subtotal: { type: Number, default: 0 },
     taxRate: { type: Number, default: 0 },
@@ -47,14 +53,16 @@ const OrderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+OrderSchema.index({ restaurant: 1, invoiceNo: 1 }, { unique: true });
+
 OrderSchema.pre("validate", async function generateInvoiceNo(next) {
   if (this.invoiceNo) return next();
   try {
     const Order = this.constructor;
     const prefix = this.status === "held" ? "HLD" : "INV";
     const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-    // Find latest invoice for today with same prefix
     const latest = await Order.findOne({
+      restaurant: this.restaurant,
       invoiceNo: new RegExp(`^${prefix}-${datePart}-`),
     })
       .sort({ createdAt: -1 })

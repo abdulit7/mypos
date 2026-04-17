@@ -1,0 +1,75 @@
+<% const action = isNew ? '/users' : '/users/' + user._id + '?_method=PUT'; %>
+<h1 class="text-2xl font-bold mb-4"><%= isNew ? 'New User' : 'Edit User' %></h1>
+
+<form method="POST" action="<%= action %>" class="grid md:grid-cols-2 gap-4">
+  <div class="bg-white rounded-lg shadow p-4 space-y-3">
+    <div>
+      <label class="block text-sm font-medium mb-1">Full name</label>
+      <input name="name" class="input" value="<%= user.name || '' %>" required />
+    </div>
+    <% if (isNew) { %>
+      <div>
+        <label class="block text-sm font-medium mb-1">Username</label>
+        <input name="username" class="input" value="<%= user.username || '' %>" required />
+      </div>
+    <% } else { %>
+      <div>
+        <label class="block text-sm font-medium mb-1">Username</label>
+        <input class="input bg-slate-100" value="<%= user.username %>" readonly />
+      </div>
+    <% } %>
+    <div>
+      <label class="block text-sm font-medium mb-1">Password <%= isNew ? '' : '(leave blank to keep)' %></label>
+      <input name="password" type="password" class="input" <%= isNew ? 'required' : '' %> />
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1">Role</label>
+      <select name="role" class="input" id="roleSelect">
+        <option value="cashier" <%= user.role === 'cashier' ? 'selected' : '' %>>Cashier (limited by permissions)</option>
+        <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Admin (all permissions for this restaurant)</option>
+      </select>
+    </div>
+    <label class="inline-flex items-center gap-2 text-sm">
+      <input type="checkbox" name="active" <%= user.active !== false ? 'checked' : '' %> />
+      <span>Active</span>
+    </label>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-4 space-y-3" id="permsBlock">
+    <h2 class="font-semibold">Permissions</h2>
+    <p class="text-xs text-slate-500">Applies when role is <strong>Cashier</strong>. Admins get all permissions automatically.</p>
+    <% const groups = {};
+       permissionDefs.forEach(function(p){ (groups[p.group] = groups[p.group] || []).push(p); });
+       Object.keys(groups).forEach(function(g){ %>
+      <div>
+        <div class="text-xs uppercase tracking-wide text-slate-500 mt-2 mb-1"><%= g %></div>
+        <div class="grid grid-cols-1 gap-1">
+          <% groups[g].forEach(function(p){ %>
+            <label class="inline-flex items-start gap-2 text-sm">
+              <input type="checkbox" name="permissions" value="<%= p.key %>" <%= (user.permissions || []).includes(p.key) ? 'checked' : '' %> class="mt-0.5" />
+              <span><%= p.label %> <code class="text-xs text-slate-500"><%= p.key %></code></span>
+            </label>
+          <% }); %>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+
+  <div class="md:col-span-2 flex items-center gap-3">
+    <button class="btn-primary"><%= isNew ? 'Create User' : 'Save Changes' %></button>
+    <a href="/users" class="text-sm text-slate-600 hover:underline">Cancel</a>
+  </div>
+</form>
+
+<script>
+  (function() {
+    const role = document.getElementById('roleSelect');
+    const perms = document.getElementById('permsBlock');
+    function update() {
+      perms.style.opacity = role.value === 'admin' ? '0.5' : '1';
+      perms.querySelectorAll('input[type=checkbox]').forEach(function(i){ i.disabled = role.value === 'admin'; });
+    }
+    role.addEventListener('change', update);
+    update();
+  })();
+</script>

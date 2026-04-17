@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title><%= title ? title + ' · ' : '' %>Super Admin · <%= appName %></title>
+  <link rel="stylesheet" href="/css/tailwind.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='54' font-size='56'>🛡️</text></svg>" />
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+  <header class="bg-slate-900 text-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-6">
+      <a href="/superadmin" class="flex items-center gap-2 font-bold text-lg">
+        <span>🛡️</span><span>Super Admin</span>
+      </a>
+      <nav class="flex items-center gap-1 text-sm">
+        <% const navItems = [
+          { href: '/superadmin', label: 'Overview' },
+          { href: '/superadmin/restaurants', label: 'Restaurants' },
+        ]; %>
+        <% navItems.forEach(function(item){
+             const active = path === item.href || (item.href !== '/superadmin' && path.startsWith(item.href));
+        %>
+          <a href="<%= item.href %>" class="px-3 py-1.5 rounded-md <%= active ? 'bg-white/20' : 'hover:bg-white/10' %>"><%= item.label %></a>
+        <% }); %>
+      </nav>
+      <div class="ml-auto flex items-center gap-3 text-sm">
+        <% if (currentUser) { %>
+          <span>Hi, <strong><%= currentUser.name %></strong> <span class="text-white/60">(superadmin)</span></span>
+          <form action="/logout" method="POST">
+            <button type="submit" class="bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-md">Sign out</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6">
+    <% if (success && success.length) { %>
+      <div class="mb-4 rounded-md bg-emerald-100 text-emerald-800 px-4 py-2"><%= success.join(' ') %></div>
+    <% } %>
+    <% if (error && error.length) { %>
+      <div class="mb-4 rounded-md bg-red-100 text-red-800 px-4 py-2"><%= error.join(' ') %></div>
+    <% } %>
+    <%- body %>
+  </main>
+
+  <footer class="max-w-7xl mx-auto px-4 py-6 text-xs text-slate-500">
+    &copy; <%= new Date().getFullYear() %> <%= appName %> · Super Admin
+  </footer>
+</body>
+</html>

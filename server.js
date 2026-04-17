@@ -20,8 +20,14 @@ const productRoutes = require("./src/routes/products");
 const posRoutes = require("./src/routes/pos");
 const orderRoutes = require("./src/routes/orders");
 const reportRoutes = require("./src/routes/reports");
+const superadminRoutes = require("./src/routes/superadmin");
+const userRoutes = require("./src/routes/users");
 
-const { attachUser, requireAuth } = require("./src/middleware/auth");
+const {
+  attachUser,
+  requireAuth,
+  requireRestaurantUser,
+} = require("./src/middleware/auth");
 
 async function bootstrap() {
   const app = express();
@@ -61,12 +67,14 @@ async function bootstrap() {
   });
 
   app.use("/", authRoutes);
-  app.use("/", requireAuth, dashboardRoutes);
-  app.use("/categories", requireAuth, categoryRoutes);
-  app.use("/products", requireAuth, productRoutes);
-  app.use("/pos", requireAuth, posRoutes);
-  app.use("/orders", requireAuth, orderRoutes);
-  app.use("/reports", requireAuth, reportRoutes);
+  app.use("/superadmin", requireAuth, superadminRoutes);
+  app.use("/", requireAuth, requireRestaurantUser, dashboardRoutes);
+  app.use("/categories", requireAuth, requireRestaurantUser, categoryRoutes);
+  app.use("/products", requireAuth, requireRestaurantUser, productRoutes);
+  app.use("/pos", requireAuth, requireRestaurantUser, posRoutes);
+  app.use("/orders", requireAuth, requireRestaurantUser, orderRoutes);
+  app.use("/reports", requireAuth, requireRestaurantUser, reportRoutes);
+  app.use("/users", requireAuth, requireRestaurantUser, userRoutes);
 
   app.use((req, res) => {
     res.status(404).render("404", { title: "Not Found" });

@@ -25,9 +25,20 @@ router.post("/login", async (req, res) => {
     req.flash("error", "Invalid credentials.");
     return res.redirect("/login");
   }
+  if (user.active === false) {
+    req.flash("error", "Your account is disabled.");
+    return res.redirect("/login");
+  }
   req.session.userId = user._id.toString();
   req.flash("success", `Welcome, ${user.name}!`);
+  if (user.role === "superadmin") {
+    return res.redirect("/superadmin/restaurants");
+  }
   res.redirect("/");
+});
+
+router.get("/logout", (req, res) => {
+  req.session.destroy(() => res.redirect("/login"));
 });
 
 router.post("/logout", (req, res) => {

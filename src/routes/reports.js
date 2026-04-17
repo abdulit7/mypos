@@ -1,7 +1,8 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const PDFDocument = require("pdfkit");
 const Order = require("../models/Order");
-const Product = require("../models/Product");
+const { requirePermission } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -14,10 +15,14 @@ function resolveDateRange(query) {
   return { from, to };
 }
 
-async function buildSalesReport(query) {
+async function buildSalesReport(query, restaurantId) {
   const { from, to } = resolveDateRange(query);
 
-  const match = { status: "completed", createdAt: { $gte: from, $lte: to } };
+  const match = {
+    restaurant: new mongoose.Types.ObjectId(restaurantId),
+    status: "completed",
+    createdAt: { $gte: from, $lte: to },
+  };
 
   const [summary, byDay, byCategory, topProducts, orders] = await Promise.all([
     Order.aggregate([
@@ -103,8 +108,8 @@ async function buildSalesReport(query) {
   };
 }
 
-router.get("/", async (req, res) => {
-  const report = await buildSalesReport(req.query);
+router.get("/", requirePermission("reports.view"), async (req, res) => {
+  const report = await buildSalesReport(req.query, req.user.restaurant);
   res.render("reports/sales", {
     title: "Sales Report",
     report,
@@ -115,8 +120,8 @@ router.get("/", async (req, res) => {
   });
 });
 
-router.get("/sales.pdf", async (req, res) => {
-  const report = await buildSalesReport(req.query);
+router.get("/sales.pdf", requirePermission("reports.view"), async (req, res) => {
+  const report = await buildSalesReport(req.query, req.user.restaurant);
   const doc = new PDFDocument({ size: "A4", margin: 40 });
   res.setHeader("Content-Type", "application/pdf");
   res.setHeader(
@@ -127,7 +132,10 @@ router.get("/sales.pdf", async (req, res) => {
   );
   doc.pipe(res);
 
-  doc.fontSize(20).text("Food Point POS — Sales Report", { align: "center" });
+  const title = req.restaurant?.name
+    ? `${req.restaurant.name} — Sales Report`
+    : "Sales Report";
+  doc.fontSize(20).text(title, { align: "center" });
   doc
     .moveDown(0.2)
     .fontSize(11)

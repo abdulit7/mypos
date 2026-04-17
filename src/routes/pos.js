@@ -2,11 +2,14 @@ const express = require("express");
 const Product = require("../models/Product");
 const Category = require("../models/Category");
 const Order = require("../models/Order");
+const { requirePermission } = require("../middleware/auth");
 
 const router = express.Router();
 
 function parseCart(body) {
-  const rawItems = Array.isArray(body.items) ? body.items : JSON.parse(body.items || "[]");
+  const rawItems = Array.isArray(body.items)
+    ? body.items
+    : JSON.parse(body.items || "[]");
   const items = rawItems.map((it) => {
     const price = Number(it.price) || 0;
     const quantity = Math.max(1, Number(it.quantity) || 1);
@@ -26,16 +29,22 @@ function parseCart(body) {
   return { items, subtotal, taxRate, taxAmount, discount, total };
 }
 
-router.get("/", async (req, res) => {
+router.get("/", requirePermission("pos.access"), async (req, res) => {
+  const scope = { restaurant: req.user.restaurant };
   const [categories, products, heldOrders] = await Promise.all([
-    Category.find({ active: true }).sort({ name: 1 }).lean(),
-    Product.find({ active: true }).populate("category").sort({ name: 1 }).lean(),
-    Order.find({ status: "held" }).sort({ createdAt: -1 }).limit(20).lean(),
+    Category.find({ ...scope, active: true }).sort({ name: 1 }).lean(),
+    Product.find({ ...scope, active: true })
+      .populate("category")
+      .sort({ name: 1 })
+      .lean(),
+    Order.find({ ...scope, status: "held" })
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .lean(),
   ]);
-  // Load held order if requested
   let loadedHeld = null;
   if (req.query.load) {
-    loadedHeld = await Order.findById(req.query.load).lean();
+    loadedHeld = await Order.findOne({ _id: req.query.load, ...scope }).lean();
   }
   res.render("pos/index", {
     title: "Point of Sale",
@@ -46,8 +55,7 @@ router.get("/", async (req, res) => {
   });
 });
 
-// Sale: complete order
-router.post("/sale", async (req, res) => {
+router.post("/sale", requirePermission("pos.sale"), async (req, res) => {
   try {
     const cart = parseCart(req.body);
     if (!cart.items.length) {
@@ -58,7 +66,10 @@ router.post("/sale", async (req, res) => {
 
     let order;
     if (req.body.fromHeldId) {
-      order = await Order.findById(req.body.fromHeldId);
+      order = await Order.findOne({
+        _id: req.body.fromHeldId,
+        restaurant: req.user.restaurant,
+      });
       if (!order) return res.status(404).json({ error: "Held order not found" });
       Object.assign(order, cart, {
         paid,
@@ -70,13 +81,14 @@ router.post("/sale", async (req, res) => {
         customerPhone: req.body.customerPhone || "",
         note: req.body.note || "",
         status: "completed",
-        invoiceNo: undefined, // regenerate as INV-
+        invoiceNo: undefined,
         cashier: req.user?._id,
       });
       await order.save();
     } else {
       order = await Order.create({
         ...cart,
+        restaurant: req.user.restaurant,
         paid,
         change,
         paymentMethod: req.body.paymentMethod || "cash",
@@ -102,8 +114,7 @@ router.post("/sale", async (req, res) => {
   }
 });
 
-// Hold current cart as held order
-router.post("/hold", async (req, res) => {
+router.post("/hold", requirePermission("pos.hold"), async (req, res) => {
   try {
     const cart = parseCart(req.body);
     if (!cart.items.length) {
@@ -111,7 +122,10 @@ router.post("/hold", async (req, res) => {
     }
     let order;
     if (req.body.fromHeldId) {
-      order = await Order.findById(req.body.fromHeldId);
+      order = await Order.findOne({
+        _id: req.body.fromHeldId,
+        restaurant: req.user.restaurant,
+      });
       if (!order) return res.status(404).json({ error: "Held order not found" });
       Object.assign(order, cart, {
         paymentMethod: req.body.paymentMethod || "cash",
@@ -127,6 +141,7 @@ router.post("/hold", async (req, res) => {
     } else {
       order = await Order.create({
         ...cart,
+        restaurant: req.user.restaurant,
         paymentMethod: req.body.paymentMethod || "cash",
         orderType: req.body.orderType || "dine-in",
         tableNo: req.body.tableNo || "",

@@ -1,11 +1,12 @@
 const express = require("express");
 const Order = require("../models/Order");
+const { requirePermission } = require("../middleware/auth");
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", requirePermission("orders.view"), async (req, res) => {
   const { q, status, from, to } = req.query;
-  const filter = {};
+  const filter = { restaurant: req.user.restaurant };
   if (status && ["held", "completed", "cancelled"].includes(status)) {
     filter.status = status;
   }
@@ -44,8 +45,11 @@ router.get("/", async (req, res) => {
   });
 });
 
-router.get("/:id", async (req, res) => {
-  const order = await Order.findById(req.params.id)
+router.get("/:id", requirePermission("orders.view"), async (req, res) => {
+  const order = await Order.findOne({
+    _id: req.params.id,
+    restaurant: req.user.restaurant,
+  })
     .populate("cashier", "name username")
     .lean();
   if (!order) {
@@ -55,8 +59,11 @@ router.get("/:id", async (req, res) => {
   res.render("orders/show", { title: `Order ${order.invoiceNo}`, order });
 });
 
-router.get("/:id/print", async (req, res) => {
-  const order = await Order.findById(req.params.id)
+router.get("/:id/print", requirePermission("orders.view"), async (req, res) => {
+  const order = await Order.findOne({
+    _id: req.params.id,
+    restaurant: req.user.restaurant,
+  })
     .populate("cashier", "name username")
     .lean();
   if (!order) {
@@ -65,18 +72,29 @@ router.get("/:id/print", async (req, res) => {
   res.render("orders/print", {
     title: `Invoice ${order.invoiceNo}`,
     order,
+    restaurant: req.restaurant,
     layout: "layouts/blank",
   });
 });
 
-router.post("/:id/cancel", async (req, res) => {
-  await Order.findByIdAndUpdate(req.params.id, { status: "cancelled" });
-  req.flash("success", "Order cancelled.");
-  res.redirect("back");
-});
+router.post(
+  "/:id/cancel",
+  requirePermission("orders.cancel"),
+  async (req, res) => {
+    await Order.findOneAndUpdate(
+      { _id: req.params.id, restaurant: req.user.restaurant },
+      { status: "cancelled" }
+    );
+    req.flash("success", "Order cancelled.");
+    res.redirect("back");
+  }
+);
 
-router.delete("/:id", async (req, res) => {
-  const order = await Order.findById(req.params.id);
+router.delete("/:id", requirePermission("orders.view"), async (req, res) => {
+  const order = await Order.findOne({
+    _id: req.params.id,
+    restaurant: req.user.restaurant,
+  });
   if (order && order.status === "held") {
     await Order.findByIdAndDelete(req.params.id);
     req.flash("success", "Held order removed.");
