@@ -29,9 +29,12 @@
 
   function renderCart() {
     const list = $("#cartList");
-    const empty = $("#cartEmpty");
     list.innerHTML = "";
     if (!state.cart.length) {
+      const empty = document.createElement("div");
+      empty.id = "cartEmpty";
+      empty.className = "text-sm text-gray-500 py-6 text-center";
+      empty.textContent = "Cart is empty. Tap items to add.";
       list.appendChild(empty);
       return;
     }
