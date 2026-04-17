@@ -1,0 +1,48 @@
+<div class="flex items-center justify-between mb-6">
+  <h1 class="text-2xl font-bold">Restaurants</h1>
+  <a href="/superadmin/restaurants/new" class="btn-primary">+ New Restaurant</a>
+</div>
+
+<div class="bg-white rounded-lg shadow overflow-hidden">
+  <% if (!restaurants.length) { %>
+    <div class="p-6 text-sm text-slate-500">No restaurants yet.</div>
+  <% } else { %>
+    <table class="w-full text-sm">
+      <thead class="text-left text-slate-500 bg-slate-50">
+        <tr>
+          <th class="px-4 py-2">Name</th>
+          <th class="px-4 py-2">Owner</th>
+          <th class="px-4 py-2">Phone</th>
+          <th class="px-4 py-2">Users</th>
+          <th class="px-4 py-2">Expires</th>
+          <th class="px-4 py-2">Status</th>
+          <th class="px-4 py-2 text-right"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% restaurants.forEach(function(r){ %>
+          <tr class="border-t">
+            <td class="px-4 py-2 font-medium"><a class="text-brand-600 hover:underline" href="/superadmin/restaurants/<%= r._id %>"><%= r.name %></a><div class="text-xs text-slate-500"><%= r.slug %></div></td>
+            <td class="px-4 py-2"><%= r.ownerName || '—' %></td>
+            <td class="px-4 py-2"><%= r.phone || '—' %></td>
+            <td class="px-4 py-2"><%= r.userCount %> / <%= r.maxUsers %></td>
+            <td class="px-4 py-2"><%= r.expiresAt ? new Date(r.expiresAt).toISOString().slice(0,10) : '—' %></td>
+            <td class="px-4 py-2">
+              <% if (!r.isActive) { %>
+                <span class="inline-block px-2 py-0.5 rounded text-xs bg-slate-200 text-slate-700">Suspended</span>
+              <% } else if (r.expired) { %>
+                <span class="inline-block px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-800">Expired</span>
+              <% } else { %>
+                <span class="inline-block px-2 py-0.5 rounded text-xs bg-emerald-100 text-emerald-800">Active</span>
+              <% } %>
+            </td>
+            <td class="px-4 py-2 text-right">
+              <a href="/superadmin/restaurants/<%= r._id %>" class="text-brand-600 hover:underline mr-2">View</a>
+              <a href="/superadmin/restaurants/<%= r._id %>/edit" class="text-slate-600 hover:underline">Edit</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>

@@ -14,6 +14,12 @@ const ProductSchema = new mongoose.Schema(
     description: { type: String, default: "" },
     image: { type: String, default: "" },
     active: { type: Boolean, default: true },
+    restaurant: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Restaurant",
+      required: true,
+      index: true,
+    },
   },
   { timestamps: true }
 );

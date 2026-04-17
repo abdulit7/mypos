@@ -1,32 +1,41 @@
 const express = require("express");
 const Category = require("../models/Category");
 const Product = require("../models/Product");
-const { requireRole } = require("../middleware/auth");
+const { requirePermission } = require("../middleware/auth");
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  const categories = await Category.find().sort({ name: 1 }).lean();
+router.get("/", requirePermission("categories.manage"), async (req, res) => {
+  const scope = { restaurant: req.user.restaurant };
+  const categories = await Category.find(scope).sort({ name: 1 }).lean();
   const counts = await Product.aggregate([
+    { $match: scope },
     { $group: { _id: "$category", count: { $sum: 1 } } },
   ]);
   const countMap = Object.fromEntries(counts.map((c) => [String(c._id), c.count]));
   res.render("categories/index", {
     title: "Categories",
-    categories: categories.map((c) => ({ ...c, productCount: countMap[String(c._id)] || 0 })),
+    categories: categories.map((c) => ({
+      ...c,
+      productCount: countMap[String(c._id)] || 0,
+    })),
   });
 });
 
-router.get("/new", requireRole("admin"), (req, res) => {
+router.get("/new", requirePermission("categories.manage"), (req, res) => {
   res.render("categories/form", { title: "New Category", category: {} });
 });
 
-router.post("/", requireRole("admin"), async (req, res) => {
+router.post("/", requirePermission("categories.manage"), async (req, res) => {
   try {
     await Category.create({
       name: req.body.name.trim(),
       description: req.body.description || "",
-      active: req.body.active === "on" || req.body.active === "true" || req.body.active === undefined,
+      active:
+        req.body.active === "on" ||
+        req.body.active === "true" ||
+        req.body.active === undefined,
+      restaurant: req.user.restaurant,
     });
     req.flash("success", "Category created.");
     res.redirect("/categories");
@@ -36,22 +45,32 @@ router.post("/", requireRole("admin"), async (req, res) => {
   }
 });
 
-router.get("/:id/edit", requireRole("admin"), async (req, res) => {
-  const category = await Category.findById(req.params.id).lean();
-  if (!category) {
-    req.flash("error", "Category not found.");
-    return res.redirect("/categories");
+router.get(
+  "/:id/edit",
+  requirePermission("categories.manage"),
+  async (req, res) => {
+    const category = await Category.findOne({
+      _id: req.params.id,
+      restaurant: req.user.restaurant,
+    }).lean();
+    if (!category) {
+      req.flash("error", "Category not found.");
+      return res.redirect("/categories");
+    }
+    res.render("categories/form", { title: "Edit Category", category });
   }
-  res.render("categories/form", { title: "Edit Category", category });
-});
+);
 
-router.put("/:id", requireRole("admin"), async (req, res) => {
+router.put("/:id", requirePermission("categories.manage"), async (req, res) => {
   try {
-    await Category.findByIdAndUpdate(req.params.id, {
-      name: req.body.name.trim(),
-      description: req.body.description || "",
-      active: req.body.active === "on" || req.body.active === "true",
-    });
+    await Category.findOneAndUpdate(
+      { _id: req.params.id, restaurant: req.user.restaurant },
+      {
+        name: req.body.name.trim(),
+        description: req.body.description || "",
+        active: req.body.active === "on" || req.body.active === "true",
+      }
+    );
     req.flash("success", "Category updated.");
     res.redirect("/categories");
   } catch (err) {
@@ -60,15 +79,25 @@ router.put("/:id", requireRole("admin"), async (req, res) => {
   }
 });
 
-router.delete("/:id", requireRole("admin"), async (req, res) => {
-  const count = await Product.countDocuments({ category: req.params.id });
-  if (count > 0) {
-    req.flash("error", "Cannot delete: category has products.");
-    return res.redirect("/categories");
+router.delete(
+  "/:id",
+  requirePermission("categories.manage"),
+  async (req, res) => {
+    const count = await Product.countDocuments({
+      category: req.params.id,
+      restaurant: req.user.restaurant,
+    });
+    if (count > 0) {
+      req.flash("error", "Cannot delete: category has products.");
+      return res.redirect("/categories");
+    }
+    await Category.findOneAndDelete({
+      _id: req.params.id,
+      restaurant: req.user.restaurant,
+    });
+    req.flash("success", "Category deleted.");
+    res.redirect("/categories");
   }
-  await Category.findByIdAndDelete(req.params.id);
-  req.flash("success", "Category deleted.");
-  res.redirect("/categories");
-});
+);
 
 module.exports = router;

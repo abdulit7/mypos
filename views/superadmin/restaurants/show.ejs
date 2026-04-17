@@ -1,0 +1,90 @@
+<div class="flex items-start justify-between mb-4">
+  <div>
+    <h1 class="text-2xl font-bold"><%= restaurant.name %></h1>
+    <p class="text-sm text-slate-500"><%= restaurant.slug %></p>
+  </div>
+  <div class="flex items-center gap-2">
+    <a href="/superadmin/restaurants/<%= restaurant._id %>/edit" class="btn-secondary">Edit</a>
+    <form method="POST" action="/superadmin/restaurants/<%= restaurant._id %>/toggle" class="inline">
+      <button class="btn-secondary" type="submit"><%= restaurant.isActive ? 'Suspend' : 'Activate' %></button>
+    </form>
+    <form method="POST" action="/superadmin/restaurants/<%= restaurant._id %>?_method=DELETE" class="inline" onsubmit="return confirm('Delete this restaurant and ALL its data?');">
+      <button class="bg-red-600 text-white px-3 py-1.5 rounded-md text-sm hover:bg-red-700" type="submit">Delete</button>
+    </form>
+  </div>
+</div>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+  <div class="bg-white rounded-lg shadow p-3 text-sm">
+    <div class="text-xs uppercase text-slate-500">Status</div>
+    <% if (!restaurant.isActive) { %>
+      <div class="font-bold text-slate-700">Suspended</div>
+    <% } else if (restaurant.expired) { %>
+      <div class="font-bold text-amber-700">Expired</div>
+    <% } else { %>
+      <div class="font-bold text-emerald-700">Active</div>
+    <% } %>
+  </div>
+  <div class="bg-white rounded-lg shadow p-3 text-sm">
+    <div class="text-xs uppercase text-slate-500">Expires</div>
+    <div class="font-semibold"><%= restaurant.expiresAt ? new Date(restaurant.expiresAt).toISOString().slice(0,10) : '—' %></div>
+  </div>
+  <div class="bg-white rounded-lg shadow p-3 text-sm">
+    <div class="text-xs uppercase text-slate-500">Users</div>
+    <div class="font-semibold"><%= users.length %> / <%= restaurant.maxUsers %></div>
+  </div>
+  <div class="bg-white rounded-lg shadow p-3 text-sm">
+    <div class="text-xs uppercase text-slate-500">Revenue</div>
+    <div class="font-semibold"><%= restaurant.currency %> <%= revenue.toFixed(2) %></div>
+    <div class="text-xs text-slate-500"><%= orderCount %> completed orders · <%= productCount %> products</div>
+  </div>
+</div>
+
+<div class="grid md:grid-cols-2 gap-4">
+  <div class="bg-white rounded-lg shadow p-4 space-y-3">
+    <h2 class="font-semibold">Extend subscription</h2>
+    <form method="POST" action="/superadmin/restaurants/<%= restaurant._id %>/extend" class="flex items-end gap-2">
+      <div class="flex-1">
+        <label class="block text-sm font-medium mb-1">Add days</label>
+        <input name="days" type="number" min="1" value="30" class="input" />
+      </div>
+      <button class="btn-primary" type="submit">Extend</button>
+    </form>
+    <p class="text-xs text-slate-500">Adds to the current expiry if still in the future, otherwise from today.</p>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-4 space-y-3">
+    <h2 class="font-semibold">Reset admin password</h2>
+    <form method="POST" action="/superadmin/restaurants/<%= restaurant._id %>/reset-admin" class="flex items-end gap-2">
+      <div class="flex-1">
+        <label class="block text-sm font-medium mb-1">New password</label>
+        <input name="password" type="text" class="input" minlength="4" required />
+      </div>
+      <button class="btn-secondary" type="submit">Reset</button>
+    </form>
+    <p class="text-xs text-slate-500">Resets the first admin user of this restaurant.</p>
+  </div>
+</div>
+
+<div class="bg-white rounded-lg shadow mt-4 overflow-hidden">
+  <div class="px-4 py-3 border-b font-semibold">Users</div>
+  <% if (!users.length) { %>
+    <div class="p-4 text-sm text-slate-500">No users yet.</div>
+  <% } else { %>
+    <table class="w-full text-sm">
+      <thead class="text-left text-slate-500 bg-slate-50">
+        <tr><th class="px-4 py-2">Name</th><th class="px-4 py-2">Username</th><th class="px-4 py-2">Role</th><th class="px-4 py-2">Active</th></tr>
+      </thead>
+      <tbody>
+        <% users.forEach(function(u){ %>
+          <tr class="border-t">
+            <td class="px-4 py-2"><%= u.name %></td>
+            <td class="px-4 py-2"><code><%= u.username %></code></td>
+            <td class="px-4 py-2"><%= u.role %></td>
+            <td class="px-4 py-2"><%= u.active === false ? 'No' : 'Yes' %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>

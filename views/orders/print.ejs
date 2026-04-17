@@ -24,9 +24,12 @@
   </div>
 </div>
 
+<% const currency = (restaurant && restaurant.currency) || 'Rs'; %>
 <div class="receipt">
-  <h1>Food Point</h1>
+  <h1><%= restaurant ? restaurant.name : 'Food Point' %></h1>
   <div class="muted">POS Invoice</div>
+  <% if (restaurant && restaurant.address) { %><div class="muted"><%= restaurant.address %></div><% } %>
+  <% if (restaurant && restaurant.phone) { %><div class="muted"><%= restaurant.phone %></div><% } %>
   <hr/>
   <div style="font-size: 11px; line-height: 1.4;">
     <div><strong>Invoice:</strong> <%= order.invoiceNo %></div>
@@ -59,19 +62,19 @@
   </table>
   <hr/>
   <table class="totals">
-    <tr><td class="label">Subtotal</td><td class="val">Rs <%= order.subtotal.toFixed(2) %></td></tr>
-    <tr><td class="label">Tax (<%= order.taxRate %>%)</td><td class="val">Rs <%= order.taxAmount.toFixed(2) %></td></tr>
-    <tr><td class="label">Discount</td><td class="val">- Rs <%= order.discount.toFixed(2) %></td></tr>
-    <tr><td class="label big">Total</td><td class="val big">Rs <%= order.total.toFixed(2) %></td></tr>
-    <tr><td class="label">Paid (<%= order.paymentMethod %>)</td><td class="val">Rs <%= order.paid.toFixed(2) %></td></tr>
-    <tr><td class="label">Change</td><td class="val">Rs <%= order.change.toFixed(2) %></td></tr>
+    <tr><td class="label">Subtotal</td><td class="val"><%= currency %> <%= order.subtotal.toFixed(2) %></td></tr>
+    <tr><td class="label">Tax (<%= order.taxRate %>%)</td><td class="val"><%= currency %> <%= order.taxAmount.toFixed(2) %></td></tr>
+    <tr><td class="label">Discount</td><td class="val">- <%= currency %> <%= order.discount.toFixed(2) %></td></tr>
+    <tr><td class="label big">Total</td><td class="val big"><%= currency %> <%= order.total.toFixed(2) %></td></tr>
+    <tr><td class="label">Paid (<%= order.paymentMethod %>)</td><td class="val"><%= currency %> <%= order.paid.toFixed(2) %></td></tr>
+    <tr><td class="label">Change</td><td class="val"><%= currency %> <%= order.change.toFixed(2) %></td></tr>
   </table>
   <hr/>
   <% if (order.note) { %>
     <div style="font-size: 11px;"><em>Note:</em> <%= order.note %></div>
     <hr/>
   <% } %>
-  <div class="muted">Thank you for visiting Food Point!</div>
+  <div class="muted">Thank you for visiting <%= restaurant ? restaurant.name : 'Food Point' %>!</div>
 </div>
 
 <script>
