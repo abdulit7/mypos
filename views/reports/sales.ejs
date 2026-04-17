@@ -1,0 +1,90 @@
+<div class="flex items-center justify-between mb-4">
+  <h1 class="text-2xl font-bold">Sales Report</h1>
+  <div class="flex gap-2">
+    <a href="/reports/sales.pdf?<%= new URLSearchParams({ from: q.from, to: q.to }).toString() %>" target="_blank" class="btn-primary">Export PDF</a>
+    <button onclick="window.print()" class="btn-secondary">Print</button>
+  </div>
+</div>
+
+<form method="GET" class="card mb-4 flex flex-wrap gap-2 items-end no-print">
+  <div>
+    <label class="block text-xs text-gray-500">From</label>
+    <input type="date" name="from" value="<%= q.from %>" class="input" />
+  </div>
+  <div>
+    <label class="block text-xs text-gray-500">To</label>
+    <input type="date" name="to" value="<%= q.to %>" class="input" />
+  </div>
+  <button class="btn-primary">Apply</button>
+  <a href="/reports" class="btn-secondary">Reset (30d)</a>
+</form>
+
+<div class="grid gap-4 md:grid-cols-4 mb-4">
+  <div class="card">
+    <div class="text-xs uppercase text-gray-500">Orders</div>
+    <div class="text-2xl font-bold"><%= report.summary.orders %></div>
+  </div>
+  <div class="card">
+    <div class="text-xs uppercase text-gray-500">Gross</div>
+    <div class="text-2xl font-bold">Rs <%= report.summary.gross.toFixed(2) %></div>
+  </div>
+  <div class="card">
+    <div class="text-xs uppercase text-gray-500">Tax</div>
+    <div class="text-2xl font-bold">Rs <%= report.summary.tax.toFixed(2) %></div>
+  </div>
+  <div class="card">
+    <div class="text-xs uppercase text-gray-500">Net Total</div>
+    <div class="text-2xl font-bold text-brand-700">Rs <%= report.summary.total.toFixed(2) %></div>
+  </div>
+</div>
+
+<div class="grid gap-4 md:grid-cols-2">
+  <div class="card">
+    <h2 class="font-semibold mb-2">Sales by Category</h2>
+    <% if (!report.byCategory.length) { %>
+      <div class="text-sm text-gray-500">No data.</div>
+    <% } else { %>
+      <table class="table-base">
+        <thead><tr><th>Category</th><th>Qty</th><th>Total</th></tr></thead>
+        <tbody>
+          <% report.byCategory.forEach(function(c){ %>
+            <tr><td><%= c._id %></td><td><%= c.quantity %></td><td>Rs <%= c.total.toFixed(2) %></td></tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+  <div class="card">
+    <h2 class="font-semibold mb-2">Top Products</h2>
+    <% if (!report.topProducts.length) { %>
+      <div class="text-sm text-gray-500">No data.</div>
+    <% } else { %>
+      <table class="table-base">
+        <thead><tr><th>Item</th><th>Qty</th><th>Total</th></tr></thead>
+        <tbody>
+          <% report.topProducts.forEach(function(p){ %>
+            <tr><td><%= p._id %></td><td><%= p.quantity %></td><td>Rs <%= p.total.toFixed(2) %></td></tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</div>
+
+<div class="card mt-4">
+  <h2 class="font-semibold mb-2">Daily Breakdown</h2>
+  <% if (!report.byDay.length) { %>
+    <div class="text-sm text-gray-500">No data.</div>
+  <% } else { %>
+    <table class="table-base">
+      <thead><tr><th>Date</th><th>Orders</th><th>Total</th></tr></thead>
+      <tbody>
+        <% report.byDay.forEach(function(d){ %>
+          <tr><td><%= d._id %></td><td><%= d.orders %></td><td>Rs <%= d.total.toFixed(2) %></td></tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<style>@media print { .no-print { display: none !important; } }</style>

@@ -1,0 +1,82 @@
+<style>
+  @media print {
+    @page { size: 80mm auto; margin: 4mm; }
+    body { background: white !important; }
+    .no-print { display: none !important; }
+  }
+  .receipt { width: 300px; margin: 20px auto; font-family: 'Courier New', monospace; color: #111; background: white; padding: 16px; }
+  .receipt h1 { font-size: 18px; text-align: center; margin: 0; }
+  .receipt .muted { text-align: center; font-size: 11px; color: #555; }
+  .receipt hr { border: 0; border-top: 1px dashed #999; margin: 8px 0; }
+  .receipt table { width: 100%; font-size: 12px; border-collapse: collapse; }
+  .receipt td { padding: 2px 0; vertical-align: top; }
+  .receipt .right { text-align: right; }
+  .receipt .totals td { padding: 2px 0; }
+  .receipt .totals .label { text-align: left; }
+  .receipt .totals .val { text-align: right; }
+  .receipt .big { font-weight: bold; font-size: 14px; }
+</style>
+
+<div class="no-print bg-white border-b shadow-sm">
+  <div class="max-w-xl mx-auto px-4 py-2 flex items-center gap-2">
+    <a href="/orders/<%= order._id %>" class="btn-secondary">&larr; Back</a>
+    <button onclick="window.print()" class="btn-primary ml-auto">Print</button>
+  </div>
+</div>
+
+<div class="receipt">
+  <h1>Food Point</h1>
+  <div class="muted">POS Invoice</div>
+  <hr/>
+  <div style="font-size: 11px; line-height: 1.4;">
+    <div><strong>Invoice:</strong> <%= order.invoiceNo %></div>
+    <div><strong>Date:</strong> <%= new Date(order.createdAt).toLocaleString() %></div>
+    <div><strong>Type:</strong> <%= order.orderType %><%= order.tableNo ? ' · Table ' + order.tableNo : '' %></div>
+    <% if (order.customerName) { %><div><strong>Customer:</strong> <%= order.customerName %></div><% } %>
+    <% if (order.customerPhone) { %><div><strong>Phone:</strong> <%= order.customerPhone %></div><% } %>
+    <div><strong>Cashier:</strong> <%= order.cashier ? order.cashier.name : '—' %></div>
+  </div>
+  <hr/>
+  <table>
+    <thead>
+      <tr>
+        <td><strong>Item</strong></td>
+        <td class="right"><strong>Qty</strong></td>
+        <td class="right"><strong>Price</strong></td>
+        <td class="right"><strong>Total</strong></td>
+      </tr>
+    </thead>
+    <tbody>
+      <% order.items.forEach(function(it){ %>
+        <tr>
+          <td><%= it.name %></td>
+          <td class="right"><%= it.quantity %></td>
+          <td class="right"><%= it.price.toFixed(2) %></td>
+          <td class="right"><%= it.subtotal.toFixed(2) %></td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <hr/>
+  <table class="totals">
+    <tr><td class="label">Subtotal</td><td class="val">Rs <%= order.subtotal.toFixed(2) %></td></tr>
+    <tr><td class="label">Tax (<%= order.taxRate %>%)</td><td class="val">Rs <%= order.taxAmount.toFixed(2) %></td></tr>
+    <tr><td class="label">Discount</td><td class="val">- Rs <%= order.discount.toFixed(2) %></td></tr>
+    <tr><td class="label big">Total</td><td class="val big">Rs <%= order.total.toFixed(2) %></td></tr>
+    <tr><td class="label">Paid (<%= order.paymentMethod %>)</td><td class="val">Rs <%= order.paid.toFixed(2) %></td></tr>
+    <tr><td class="label">Change</td><td class="val">Rs <%= order.change.toFixed(2) %></td></tr>
+  </table>
+  <hr/>
+  <% if (order.note) { %>
+    <div style="font-size: 11px;"><em>Note:</em> <%= order.note %></div>
+    <hr/>
+  <% } %>
+  <div class="muted">Thank you for visiting Food Point!</div>
+</div>
+
+<script>
+  // Auto-print when opened in a popup for POS flow
+  if (window.opener) {
+    setTimeout(function(){ window.print(); }, 200);
+  }
+</script>

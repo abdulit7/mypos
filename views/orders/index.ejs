@@ -1,0 +1,78 @@
+<div class="flex items-center justify-between mb-4">
+  <h1 class="text-2xl font-bold">Orders</h1>
+  <a href="/pos" class="btn-primary">+ New Sale</a>
+</div>
+
+<form method="GET" class="card mb-4 grid gap-2 md:grid-cols-5">
+  <div class="md:col-span-2">
+    <label class="block text-xs text-gray-500">Search</label>
+    <input name="q" value="<%= q %>" class="input" placeholder="Invoice, customer, item, table..." />
+  </div>
+  <div>
+    <label class="block text-xs text-gray-500">Status</label>
+    <select name="status" class="input">
+      <option value="">Any</option>
+      <option value="completed" <%= status==='completed'?'selected':'' %>>Completed</option>
+      <option value="held" <%= status==='held'?'selected':'' %>>Held</option>
+      <option value="cancelled" <%= status==='cancelled'?'selected':'' %>>Cancelled</option>
+    </select>
+  </div>
+  <div>
+    <label class="block text-xs text-gray-500">From</label>
+    <input type="date" name="from" value="<%= from %>" class="input" />
+  </div>
+  <div>
+    <label class="block text-xs text-gray-500">To</label>
+    <input type="date" name="to" value="<%= to %>" class="input" />
+  </div>
+  <div class="md:col-span-5 flex gap-2">
+    <button class="btn-primary">Search</button>
+    <a href="/orders" class="btn-secondary">Reset</a>
+  </div>
+</form>
+
+<div class="card">
+  <% if (!orders.length) { %>
+    <div class="text-sm text-gray-500">No orders match.</div>
+  <% } else { %>
+    <table class="table-base">
+      <thead>
+        <tr>
+          <th>Invoice</th><th>Time</th><th>Type</th><th>Items</th><th>Total</th><th>Status</th><th>Cashier</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders.forEach(function(o){ %>
+          <tr>
+            <td class="font-mono"><%= o.invoiceNo %></td>
+            <td><%= new Date(o.createdAt).toLocaleString() %></td>
+            <td class="capitalize"><%= o.orderType %><%= o.tableNo ? ' · T' + o.tableNo : '' %></td>
+            <td><%= o.items.reduce((s,i)=>s+i.quantity,0) %></td>
+            <td>Rs <%= o.total.toFixed(2) %></td>
+            <td>
+              <% if (o.status === 'completed') { %>
+                <span class="text-emerald-700 font-medium">Completed</span>
+              <% } else if (o.status === 'held') { %>
+                <span class="text-amber-600 font-medium">Held</span>
+              <% } else { %>
+                <span class="text-red-600 font-medium">Cancelled</span>
+              <% } %>
+            </td>
+            <td><%= o.cashier ? o.cashier.name : '—' %></td>
+            <td class="whitespace-nowrap">
+              <a href="/orders/<%= o._id %>" class="text-brand-700 hover:underline">View</a>
+              <% if (o.status === 'completed') { %>
+                · <a href="/orders/<%= o._id %>/print" target="_blank" class="text-brand-700 hover:underline">Print</a>
+              <% } else if (o.status === 'held') { %>
+                · <a href="/pos?load=<%= o._id %>" class="text-brand-700 hover:underline">Resume</a>
+                · <form method="POST" action="/orders/<%= o._id %>?_method=DELETE" class="inline" onsubmit="return confirm('Remove held order?');">
+                    <button class="text-red-600 hover:underline">Delete</button>
+                  </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>

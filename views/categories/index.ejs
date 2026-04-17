@@ -1,0 +1,42 @@
+<div class="flex items-center justify-between mb-4">
+  <h1 class="text-2xl font-bold">Categories</h1>
+  <% if (currentUser && currentUser.role === 'admin') { %>
+    <a href="/categories/new" class="btn-primary">+ New Category</a>
+  <% } %>
+</div>
+
+<div class="card">
+  <% if (!categories.length) { %>
+    <div class="text-sm text-gray-500">No categories yet.</div>
+  <% } else { %>
+    <table class="table-base">
+      <thead>
+        <tr><th>Name</th><th>Description</th><th>Products</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% categories.forEach(function(c){ %>
+          <tr>
+            <td class="font-semibold"><%= c.name %></td>
+            <td class="text-gray-600"><%= c.description || '—' %></td>
+            <td><%= c.productCount %></td>
+            <td>
+              <% if (c.active) { %>
+                <span class="text-emerald-700 font-medium">Active</span>
+              <% } else { %>
+                <span class="text-gray-500">Inactive</span>
+              <% } %>
+            </td>
+            <td>
+              <% if (currentUser && currentUser.role === 'admin') { %>
+                <a href="/categories/<%= c._id %>/edit" class="text-brand-700 hover:underline">Edit</a>
+                <form method="POST" action="/categories/<%= c._id %>?_method=DELETE" class="inline" onsubmit="return confirm('Delete category?');">
+                  <button class="text-red-700 hover:underline ml-2">Delete</button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
