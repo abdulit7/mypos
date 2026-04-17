@@ -1,0 +1,67 @@
+<div class="grid gap-4 md:grid-cols-4">
+  <div class="card">
+    <div class="text-xs uppercase text-gray-500">Today's Sales</div>
+    <div class="text-2xl font-bold text-brand-700">Rs <%= stats.todaySales.toFixed(2) %></div>
+    <div class="text-xs text-gray-500"><%= stats.todayOrders %> orders</div>
+  </div>
+  <div class="card">
+    <div class="text-xs uppercase text-gray-500">Last 7 days</div>
+    <div class="text-2xl font-bold text-emerald-700">Rs <%= stats.weekSales.toFixed(2) %></div>
+    <div class="text-xs text-gray-500"><%= stats.weekOrders %> orders</div>
+  </div>
+  <div class="card">
+    <div class="text-xs uppercase text-gray-500">Held Orders</div>
+    <div class="text-2xl font-bold text-amber-600"><%= stats.heldOrders %></div>
+    <div class="text-xs text-gray-500"><a class="underline" href="/orders?status=held">View held</a></div>
+  </div>
+  <div class="card">
+    <div class="text-xs uppercase text-gray-500">Catalog</div>
+    <div class="text-2xl font-bold"><%= stats.productCount %> products</div>
+    <div class="text-xs text-gray-500"><%= stats.categoryCount %> categories</div>
+  </div>
+</div>
+
+<div class="mt-6 grid gap-4 md:grid-cols-3">
+  <a href="/pos" class="card hover:shadow-md transition">
+    <div class="text-lg font-semibold">🧾 Start a Sale</div>
+    <div class="text-sm text-gray-500">Open the POS terminal.</div>
+  </a>
+  <a href="/products/new" class="card hover:shadow-md transition">
+    <div class="text-lg font-semibold">➕ Add Product</div>
+    <div class="text-sm text-gray-500">Add new menu item with price.</div>
+  </a>
+  <a href="/reports" class="card hover:shadow-md transition">
+    <div class="text-lg font-semibold">📊 Sales Report</div>
+    <div class="text-sm text-gray-500">View &amp; export to PDF.</div>
+  </a>
+</div>
+
+<div class="mt-6 card">
+  <div class="flex items-center justify-between mb-3">
+    <h2 class="text-lg font-semibold">Recent Orders</h2>
+    <a href="/orders" class="text-sm text-brand-700 hover:underline">View all</a>
+  </div>
+  <% if (!recentOrders.length) { %>
+    <div class="text-sm text-gray-500">No orders yet.</div>
+  <% } else { %>
+    <table class="table-base">
+      <thead><tr><th>Invoice</th><th>Items</th><th>Total</th><th>Type</th><th>Time</th><th></th></tr></thead>
+      <tbody>
+        <% recentOrders.forEach(function(o){ %>
+          <tr>
+            <td class="font-mono"><%= o.invoiceNo %></td>
+            <td><%= o.items.reduce((s,i)=>s+i.quantity,0) %></td>
+            <td>Rs <%= o.total.toFixed(2) %></td>
+            <td class="capitalize"><%= o.orderType %></td>
+            <td><%= new Date(o.createdAt).toLocaleString() %></td>
+            <td>
+              <a href="/orders/<%= o._id %>" class="text-brand-700 hover:underline">Details</a>
+              &middot;
+              <a href="/orders/<%= o._id %>/print" target="_blank" class="text-brand-700 hover:underline">Print</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>

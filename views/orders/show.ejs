@@ -1,0 +1,59 @@
+<div class="flex items-center justify-between mb-4">
+  <div>
+    <h1 class="text-2xl font-bold">Order <span class="font-mono"><%= order.invoiceNo %></span></h1>
+    <div class="text-sm text-gray-500"><%= new Date(order.createdAt).toLocaleString() %></div>
+  </div>
+  <div class="flex gap-2">
+    <% if (order.status === 'completed') { %>
+      <a href="/orders/<%= order._id %>/print" target="_blank" class="btn-primary">Print Invoice</a>
+      <form method="POST" action="/orders/<%= order._id %>/cancel" onsubmit="return confirm('Cancel this order?');">
+        <button class="btn-danger">Cancel</button>
+      </form>
+    <% } else if (order.status === 'held') { %>
+      <a href="/pos?load=<%= order._id %>" class="btn-primary">Resume</a>
+    <% } %>
+    <a href="/orders" class="btn-secondary">Back</a>
+  </div>
+</div>
+
+<div class="grid gap-4 md:grid-cols-3">
+  <div class="md:col-span-2 card">
+    <table class="table-base">
+      <thead><tr><th>#</th><th>Item</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr></thead>
+      <tbody>
+        <% order.items.forEach(function(it, i){ %>
+          <tr>
+            <td><%= i + 1 %></td>
+            <td><%= it.name %></td>
+            <td><%= it.quantity %></td>
+            <td>Rs <%= it.price.toFixed(2) %></td>
+            <td>Rs <%= it.subtotal.toFixed(2) %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    <div class="mt-4 max-w-xs ml-auto text-sm space-y-1">
+      <div class="flex justify-between"><span>Subtotal</span><span>Rs <%= order.subtotal.toFixed(2) %></span></div>
+      <div class="flex justify-between"><span>Tax (<%= order.taxRate %>%)</span><span>Rs <%= order.taxAmount.toFixed(2) %></span></div>
+      <div class="flex justify-between"><span>Discount</span><span>- Rs <%= order.discount.toFixed(2) %></span></div>
+      <div class="flex justify-between font-bold text-base"><span>Total</span><span>Rs <%= order.total.toFixed(2) %></span></div>
+      <div class="flex justify-between"><span>Paid (<%= order.paymentMethod %>)</span><span>Rs <%= order.paid.toFixed(2) %></span></div>
+      <div class="flex justify-between"><span>Change</span><span>Rs <%= order.change.toFixed(2) %></span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="font-semibold mb-2">Order Info</h2>
+    <dl class="text-sm space-y-1">
+      <div class="flex justify-between"><dt class="text-gray-500">Status</dt><dd class="capitalize font-medium"><%= order.status %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Type</dt><dd class="capitalize"><%= order.orderType %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Table</dt><dd><%= order.tableNo || '—' %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Customer</dt><dd><%= order.customerName || '—' %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Phone</dt><dd><%= order.customerPhone || '—' %></dd></div>
+      <div class="flex justify-between"><dt class="text-gray-500">Cashier</dt><dd><%= order.cashier ? order.cashier.name : '—' %></dd></div>
+      <% if (order.note) { %>
+        <div><dt class="text-gray-500">Note</dt><dd><%= order.note %></dd></div>
+      <% } %>
+    </dl>
+  </div>
+</div>
