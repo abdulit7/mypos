@@ -8,9 +8,13 @@ const {
   DEFAULT_CASHIER_PERMISSIONS,
 } = require("../config/permissions");
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.use(requirePermission("users.manage"));
+
+function base(req) {
+  return `/r/${req.tenantSlug}`;
+}
 
 function sanitizePermissions(raw) {
   const arr = Array.isArray(raw) ? raw : raw ? [raw] : [];
@@ -18,13 +22,13 @@ function sanitizePermissions(raw) {
 }
 
 router.get("/", async (req, res) => {
-  const users = await User.find({ restaurant: req.user.restaurant })
+  const users = await User.find({ restaurant: req.tenant._id })
     .sort({ createdAt: 1 })
     .lean();
   res.render("users/index", {
     title: "Users",
     users,
-    maxUsers: req.restaurant.maxUsers,
+    maxUsers: req.tenant.maxUsers,
   });
 });
 
@@ -42,20 +46,21 @@ router.post("/", async (req, res) => {
     const { name, username, password, role, permissions, active } = req.body;
     if (!name || !username || !password) {
       req.flash("error", "Name, username, and password are required.");
-      return res.redirect("/users/new");
+      return res.redirect(`${base(req)}/users/new`);
     }
-    const count = await User.countDocuments({ restaurant: req.user.restaurant });
-    if (count >= req.restaurant.maxUsers) {
+    const count = await User.countDocuments({ restaurant: req.tenant._id });
+    if (count >= req.tenant.maxUsers) {
       req.flash(
         "error",
-        `User limit reached (${req.restaurant.maxUsers}). Contact support to raise it.`
+        `User limit reached (${req.tenant.maxUsers}). Contact support to raise it.`
       );
-      return res.redirect("/users");
+      return res.redirect(`${base(req)}/users`);
     }
     const uname = username.trim().toLowerCase();
-    if (await User.findOne({ username: uname })) {
-      req.flash("error", `Username '${uname}' is already taken.`);
-      return res.redirect("/users/new");
+    // Uniqueness is scoped to this restaurant now — two tenants can share names.
+    if (await User.findOne({ username: uname, restaurant: req.tenant._id })) {
+      req.flash("error", `Username '${uname}' is already taken in this restaurant.`);
+      return res.redirect(`${base(req)}/users/new`);
     }
     const passwordHash = await bcrypt.hash(password, 10);
     const safeRole = ["admin", "cashier"].includes(role) ? role : "cashier";
@@ -64,26 +69,26 @@ router.post("/", async (req, res) => {
       username: uname,
       passwordHash,
       role: safeRole,
-      restaurant: req.user.restaurant,
+      restaurant: req.tenant._id,
       permissions: safeRole === "admin" ? [] : sanitizePermissions(permissions),
       active: active === "on" || active === "true" || active === undefined,
     });
     req.flash("success", `User '${uname}' created.`);
-    res.redirect("/users");
+    res.redirect(`${base(req)}/users`);
   } catch (err) {
     req.flash("error", err.message);
-    res.redirect("/users/new");
+    res.redirect(`${base(req)}/users/new`);
   }
 });
 
 router.get("/:id/edit", async (req, res) => {
   const user = await User.findOne({
     _id: req.params.id,
-    restaurant: req.user.restaurant,
+    restaurant: req.tenant._id,
   }).lean();
   if (!user) {
     req.flash("error", "User not found.");
-    return res.redirect("/users");
+    return res.redirect(`${base(req)}/users`);
   }
   res.render("users/form", {
     title: `Edit · ${user.name}`,
@@ -97,27 +102,26 @@ router.put("/:id", async (req, res) => {
   try {
     const user = await User.findOne({
       _id: req.params.id,
-      restaurant: req.user.restaurant,
+      restaurant: req.tenant._id,
     });
     if (!user) {
       req.flash("error", "User not found.");
-      return res.redirect("/users");
+      return res.redirect(`${base(req)}/users`);
     }
     const { name, password, role, permissions, active } = req.body;
     user.name = (name || user.name).trim();
     if (password && password.length >= 4) {
       user.passwordHash = await bcrypt.hash(password, 10);
     }
-    // Cannot demote the last admin of a restaurant
     if (user.role === "admin" && role === "cashier") {
       const adminCount = await User.countDocuments({
-        restaurant: req.user.restaurant,
+        restaurant: req.tenant._id,
         role: "admin",
         _id: { $ne: user._id },
       });
       if (adminCount === 0) {
         req.flash("error", "At least one admin must remain for this restaurant.");
-        return res.redirect(`/users/${user._id}/edit`);
+        return res.redirect(`${base(req)}/users/${user._id}/edit`);
       }
     }
     const safeRole = ["admin", "cashier"].includes(role) ? role : user.role;
@@ -127,39 +131,39 @@ router.put("/:id", async (req, res) => {
     user.active = active === "on" || active === "true";
     await user.save();
     req.flash("success", "User updated.");
-    res.redirect("/users");
+    res.redirect(`${base(req)}/users`);
   } catch (err) {
     req.flash("error", err.message);
-    res.redirect(`/users/${req.params.id}/edit`);
+    res.redirect(`${base(req)}/users/${req.params.id}/edit`);
   }
 });
 
 router.delete("/:id", async (req, res) => {
   const user = await User.findOne({
     _id: req.params.id,
-    restaurant: req.user.restaurant,
+    restaurant: req.tenant._id,
   });
   if (!user) {
     req.flash("error", "User not found.");
-    return res.redirect("/users");
+    return res.redirect(`${base(req)}/users`);
   }
   if (String(user._id) === String(req.user._id)) {
     req.flash("error", "You cannot delete your own account.");
-    return res.redirect("/users");
+    return res.redirect(`${base(req)}/users`);
   }
   if (user.role === "admin") {
     const adminCount = await User.countDocuments({
-      restaurant: req.user.restaurant,
+      restaurant: req.tenant._id,
       role: "admin",
     });
     if (adminCount <= 1) {
       req.flash("error", "At least one admin must remain.");
-      return res.redirect("/users");
+      return res.redirect(`${base(req)}/users`);
     }
   }
   await User.findByIdAndDelete(user._id);
   req.flash("success", "User deleted.");
-  res.redirect("/users");
+  res.redirect(`${base(req)}/users`);
 });
 
 module.exports = router;

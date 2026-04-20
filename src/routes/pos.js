@@ -4,7 +4,7 @@ const Category = require("../models/Category");
 const Order = require("../models/Order");
 const { requirePermission } = require("../middleware/auth");
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 function parseCart(body) {
   const rawItems = Array.isArray(body.items)
@@ -30,7 +30,7 @@ function parseCart(body) {
 }
 
 router.get("/", requirePermission("pos.access"), async (req, res) => {
-  const scope = { restaurant: req.user.restaurant };
+  const scope = { restaurant: req.tenant._id };
   const [categories, products, heldOrders] = await Promise.all([
     Category.find({ ...scope, active: true }).sort({ name: 1 }).lean(),
     Product.find({ ...scope, active: true })
@@ -46,6 +46,7 @@ router.get("/", requirePermission("pos.access"), async (req, res) => {
   if (req.query.load) {
     loadedHeld = await Order.findOne({ _id: req.query.load, ...scope }).lean();
   }
+  res.locals.tenant = req.tenant;
   res.render("pos/index", {
     title: "Point of Sale",
     categories,
@@ -68,7 +69,7 @@ router.post("/sale", requirePermission("pos.sale"), async (req, res) => {
     if (req.body.fromHeldId) {
       order = await Order.findOne({
         _id: req.body.fromHeldId,
-        restaurant: req.user.restaurant,
+        restaurant: req.tenant._id,
       });
       if (!order) return res.status(404).json({ error: "Held order not found" });
       Object.assign(order, cart, {
@@ -88,7 +89,7 @@ router.post("/sale", requirePermission("pos.sale"), async (req, res) => {
     } else {
       order = await Order.create({
         ...cart,
-        restaurant: req.user.restaurant,
+        restaurant: req.tenant._id,
         paid,
         change,
         paymentMethod: req.body.paymentMethod || "cash",
@@ -106,7 +107,7 @@ router.post("/sale", requirePermission("pos.sale"), async (req, res) => {
       ok: true,
       orderId: order._id,
       invoiceNo: order.invoiceNo,
-      printUrl: `/orders/${order._id}/print`,
+      printUrl: `/r/${req.tenantSlug}/orders/${order._id}/print`,
     });
   } catch (err) {
     console.error(err);
@@ -124,7 +125,7 @@ router.post("/hold", requirePermission("pos.hold"), async (req, res) => {
     if (req.body.fromHeldId) {
       order = await Order.findOne({
         _id: req.body.fromHeldId,
-        restaurant: req.user.restaurant,
+        restaurant: req.tenant._id,
       });
       if (!order) return res.status(404).json({ error: "Held order not found" });
       Object.assign(order, cart, {
@@ -141,7 +142,7 @@ router.post("/hold", requirePermission("pos.hold"), async (req, res) => {
     } else {
       order = await Order.create({
         ...cart,
-        restaurant: req.user.restaurant,
+        restaurant: req.tenant._id,
         paymentMethod: req.body.paymentMethod || "cash",
         orderType: req.body.orderType || "dine-in",
         tableNo: req.body.tableNo || "",

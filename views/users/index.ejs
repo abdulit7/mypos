@@ -3,7 +3,7 @@
     <h1 class="text-2xl font-bold">Users</h1>
     <p class="text-sm text-gray-500"><%= users.length %> / <%= maxUsers %> users used</p>
   </div>
-  <a href="/users/new" class="btn-primary" <%= users.length >= maxUsers ? 'aria-disabled="true" style="pointer-events:none;opacity:0.5"' : '' %>>+ New User</a>
+  <a href="<%= rurl('/users/new') %>" class="btn-primary" <%= users.length >= maxUsers ? 'aria-disabled="true" style="pointer-events:none;opacity:0.5"' : '' %>>+ New User</a>
 </div>
 
 <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -29,8 +29,8 @@
           </td>
           <td class="px-4 py-2"><%= u.active === false ? 'No' : 'Yes' %></td>
           <td class="px-4 py-2 text-right">
-            <a href="/users/<%= u._id %>/edit" class="text-brand-600 hover:underline mr-2">Edit</a>
-            <form method="POST" action="/users/<%= u._id %>?_method=DELETE" class="inline" onsubmit="return confirm('Delete this user?');">
+            <a href="<%= rurl('/users/' + u._id + '/edit') %>" class="text-brand-600 hover:underline mr-2">Edit</a>
+            <form method="POST" action="<%= rurl('/users/' + u._id) %>?_method=DELETE" class="inline" onsubmit="return confirm('Delete this user?');">
               <button class="text-red-600 hover:underline" type="submit">Delete</button>
             </form>
           </td>

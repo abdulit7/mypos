@@ -1,7 +1,7 @@
 <div class="flex items-center justify-between mb-4">
   <h1 class="text-2xl font-bold">Categories</h1>
   <% if (currentUser && currentUser.role === 'admin') { %>
-    <a href="/categories/new" class="btn-primary">+ New Category</a>
+    <a href="<%= rurl('/categories/new') %>" class="btn-primary">+ New Category</a>
   <% } %>
 </div>
 
@@ -28,8 +28,8 @@
             </td>
             <td>
               <% if (currentUser && currentUser.role === 'admin') { %>
-                <a href="/categories/<%= c._id %>/edit" class="text-brand-700 hover:underline">Edit</a>
-                <form method="POST" action="/categories/<%= c._id %>?_method=DELETE" class="inline" onsubmit="return confirm('Delete category?');">
+                <a href="<%= rurl('/categories/' + c._id + '/edit') %>" class="text-brand-700 hover:underline">Edit</a>
+                <form method="POST" action="<%= rurl('/categories/' + c._id) %>?_method=DELETE" class="inline" onsubmit="return confirm('Delete category?');">
                   <button class="text-red-700 hover:underline ml-2">Delete</button>
                 </form>
               <% } %>

@@ -5,14 +5,14 @@
   </div>
   <div class="flex gap-2">
     <% if (order.status === 'completed') { %>
-      <a href="/orders/<%= order._id %>/print" target="_blank" class="btn-primary">Print Invoice</a>
-      <form method="POST" action="/orders/<%= order._id %>/cancel" onsubmit="return confirm('Cancel this order?');">
+      <a href="<%= rurl('/orders/' + order._id + '/print') %>" target="_blank" class="btn-primary">Print Invoice</a>
+      <form method="POST" action="<%= rurl('/orders/' + order._id + '/cancel') %>" onsubmit="return confirm('Cancel this order?');">
         <button class="btn-danger">Cancel</button>
       </form>
     <% } else if (order.status === 'held') { %>
-      <a href="/pos?load=<%= order._id %>" class="btn-primary">Resume</a>
+      <a href="<%= rurl('/pos') %>?load=<%= order._id %>" class="btn-primary">Resume</a>
     <% } %>
-    <a href="/orders" class="btn-secondary">Back</a>
+    <a href="<%= rurl('/orders') %>" class="btn-secondary">Back</a>
   </div>
 </div>
 

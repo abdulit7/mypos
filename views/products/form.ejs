@@ -1,6 +1,6 @@
 <div class="max-w-2xl">
   <h1 class="text-2xl font-bold mb-4"><%= title %></h1>
-  <form method="POST" action="<%= product._id ? '/products/' + product._id + '?_method=PUT' : '/products' %>"
+  <form method="POST" action="<%= product._id ? rurl('/products/' + product._id) + '?_method=PUT' : rurl('/products') %>"
         enctype="multipart/form-data" class="card grid gap-3 md:grid-cols-2">
     <div class="md:col-span-2">
       <label class="block text-sm font-medium mb-1">Name</label>
@@ -44,7 +44,7 @@
     </label>
     <div class="md:col-span-2 flex gap-2">
       <button class="btn-primary">Save</button>
-      <a href="/products" class="btn-secondary">Cancel</a>
+      <a href="<%= rurl('/products') %>" class="btn-secondary">Cancel</a>
     </div>
   </form>
 </div>

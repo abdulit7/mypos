@@ -12,6 +12,10 @@ const RestaurantSchema = new mongoose.Schema(
     maxUsers: { type: Number, default: 5, min: 1 },
     isActive: { type: Boolean, default: true },
     expiresAt: { type: Date, default: null },
+    // Branding — set by superadmin or by the restaurant's own admin.
+    logoUrl: { type: String, default: "" },
+    themeColor: { type: String, default: "#16a34a" },
+    tagline: { type: String, default: "" },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }

@@ -1,6 +1,6 @@
 <div class="flex items-center justify-between mb-6">
   <h1 class="text-2xl font-bold">Restaurants</h1>
-  <a href="/superadmin/restaurants/new" class="btn-primary">+ New Restaurant</a>
+  <a href="/admin/restaurants/new" class="btn-primary">+ New Restaurant</a>
 </div>
 
 <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -22,7 +22,19 @@
       <tbody>
         <% restaurants.forEach(function(r){ %>
           <tr class="border-t">
-            <td class="px-4 py-2 font-medium"><a class="text-brand-600 hover:underline" href="/superadmin/restaurants/<%= r._id %>"><%= r.name %></a><div class="text-xs text-slate-500"><%= r.slug %></div></td>
+            <td class="px-4 py-2 font-medium">
+              <div class="flex items-center gap-2">
+                <% if (r.logoUrl) { %>
+                  <img src="<%= r.logoUrl %>" alt="<%= r.name %>" class="w-8 h-8 rounded-lg object-cover border border-slate-200" />
+                <% } else { %>
+                  <span class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm shadow" style="background: linear-gradient(135deg, <%= r.themeColor || '#16a34a' %>, #0d9488)">🍗</span>
+                <% } %>
+                <div>
+                  <a class="text-brand-600 hover:underline" href="/admin/restaurants/<%= r._id %>"><%= r.name %></a>
+                  <div class="text-xs text-slate-500"><a href="/r/<%= r.slug %>" class="hover:underline" target="_blank">/r/<%= r.slug %></a></div>
+                </div>
+              </div>
+            </td>
             <td class="px-4 py-2"><%= r.ownerName || '—' %></td>
             <td class="px-4 py-2"><%= r.phone || '—' %></td>
             <td class="px-4 py-2"><%= r.userCount %> / <%= r.maxUsers %></td>
@@ -37,8 +49,8 @@
               <% } %>
             </td>
             <td class="px-4 py-2 text-right">
-              <a href="/superadmin/restaurants/<%= r._id %>" class="text-brand-600 hover:underline mr-2">View</a>
-              <a href="/superadmin/restaurants/<%= r._id %>/edit" class="text-slate-600 hover:underline">Edit</a>
+              <a href="/admin/restaurants/<%= r._id %>" class="text-brand-600 hover:underline mr-2">View</a>
+              <a href="/admin/restaurants/<%= r._id %>/edit" class="text-slate-600 hover:underline">Edit</a>
             </td>
           </tr>
         <% }); %>

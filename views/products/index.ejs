@@ -1,7 +1,7 @@
 <div class="flex items-center justify-between mb-4">
   <h1 class="text-2xl font-bold">Products</h1>
   <% if (currentUser && currentUser.role === 'admin') { %>
-    <a href="/products/new" class="btn-primary">+ New Product</a>
+    <a href="<%= rurl('/products/new') %>" class="btn-primary">+ New Product</a>
   <% } %>
 </div>
 
@@ -20,7 +20,7 @@
     </select>
   </div>
   <button class="btn-primary">Filter</button>
-  <a href="/products" class="btn-secondary">Reset</a>
+  <a href="<%= rurl('/products') %>" class="btn-secondary">Reset</a>
 </form>
 
 <div class="card">
@@ -54,8 +54,8 @@
             </td>
             <td>
               <% if (currentUser && currentUser.role === 'admin') { %>
-                <a href="/products/<%= p._id %>/edit" class="text-brand-700 hover:underline">Edit</a>
-                <form method="POST" action="/products/<%= p._id %>?_method=DELETE" class="inline" onsubmit="return confirm('Delete product?');">
+                <a href="<%= rurl('/products/' + p._id + '/edit') %>" class="text-brand-700 hover:underline">Edit</a>
+                <form method="POST" action="<%= rurl('/products/' + p._id) %>?_method=DELETE" class="inline" onsubmit="return confirm('Delete product?');">
                   <button class="text-red-700 hover:underline ml-2">Delete</button>
                 </form>
               <% } %>

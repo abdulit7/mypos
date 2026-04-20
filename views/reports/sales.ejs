@@ -1,7 +1,7 @@
 <div class="flex items-center justify-between mb-4">
   <h1 class="text-2xl font-bold">Sales Report</h1>
   <div class="flex gap-2">
-    <a href="/reports/sales.pdf?<%= new URLSearchParams({ from: q.from, to: q.to }).toString() %>" target="_blank" class="btn-primary">Export PDF</a>
+    <a href="<%= rurl('/reports/sales.pdf') %>?<%= new URLSearchParams({ from: q.from, to: q.to }).toString() %>" target="_blank" class="btn-primary">Export PDF</a>
     <button onclick="window.print()" class="btn-secondary">Print</button>
   </div>
 </div>
@@ -16,7 +16,7 @@
     <input type="date" name="to" value="<%= q.to %>" class="input" />
   </div>
   <button class="btn-primary">Apply</button>
-  <a href="/reports" class="btn-secondary">Reset (30d)</a>
+  <a href="<%= rurl('/reports') %>" class="btn-secondary">Reset (30d)</a>
 </form>
 
 <div class="grid gap-4 md:grid-cols-4 mb-4">

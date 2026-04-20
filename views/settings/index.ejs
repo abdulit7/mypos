@@ -1,0 +1,97 @@
+<div class="max-w-3xl mx-auto">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h1 class="text-2xl font-bold">Restaurant settings</h1>
+      <p class="text-sm text-slate-500">Branding and contact details customers see on receipts and the login page.</p>
+    </div>
+  </div>
+
+  <% if (!canEdit) { %>
+    <div class="rounded-md bg-amber-50 border border-amber-200 text-amber-800 px-3 py-2 text-sm mb-4">
+      Only restaurant admins can change these settings. Ask your admin to update them.
+    </div>
+  <% } %>
+
+  <form method="POST" action="<%= rurl('/settings') %>" enctype="multipart/form-data" class="grid gap-4 md:grid-cols-2">
+    <div class="bg-white rounded-xl shadow border border-slate-200 p-4 md:col-span-2">
+      <h2 class="font-semibold mb-3">Branding</h2>
+      <div class="flex items-center gap-4 mb-4">
+        <% if (restaurant.logoUrl) { %>
+          <img src="<%= restaurant.logoUrl %>" alt="<%= restaurant.name %>" class="w-20 h-20 rounded-xl object-cover border border-slate-200" />
+        <% } else { %>
+          <div class="w-20 h-20 rounded-xl flex items-center justify-center text-3xl shadow"
+               style="background: linear-gradient(135deg, <%= restaurant.themeColor || '#16a34a' %>, #0d9488); color: white;">🍗</div>
+        <% } %>
+        <div class="flex-1">
+          <label class="block text-sm font-medium mb-1">Logo (max 2 MB)</label>
+          <input type="file" name="logo" accept="image/*" <%= canEdit ? '' : 'disabled' %> />
+          <p class="text-xs text-slate-500 mt-1">PNG, JPG, WEBP or SVG. Shown on login, nav, and receipts.</p>
+        </div>
+        <% if (restaurant.logoUrl && canEdit) { %>
+          <form method="POST" action="<%= rurl('/settings/logo/remove') %>">
+            <button class="text-xs text-red-600 hover:underline" type="submit">Remove</button>
+          </form>
+        <% } %>
+      </div>
+      <div class="grid md:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-medium mb-1">Tagline</label>
+          <input name="tagline" class="input" value="<%= restaurant.tagline || '' %>" placeholder="Fresh food, fast service" <%= canEdit ? '' : 'disabled' %> />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Theme color</label>
+          <input name="themeColor" type="color" class="input h-10 p-1" value="<%= restaurant.themeColor || '#16a34a' %>" <%= canEdit ? '' : 'disabled' %> />
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow border border-slate-200 p-4">
+      <h2 class="font-semibold mb-3">Restaurant details</h2>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-sm font-medium mb-1">Name</label>
+          <input name="name" class="input" value="<%= restaurant.name %>" required <%= canEdit ? '' : 'disabled' %> />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Owner name</label>
+          <input name="ownerName" class="input" value="<%= restaurant.ownerName || '' %>" <%= canEdit ? '' : 'disabled' %> />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Phone</label>
+          <input name="phone" class="input" value="<%= restaurant.phone || '' %>" <%= canEdit ? '' : 'disabled' %> />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Address</label>
+          <textarea name="address" rows="2" class="input" <%= canEdit ? '' : 'disabled' %>><%= restaurant.address || '' %></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow border border-slate-200 p-4">
+      <h2 class="font-semibold mb-3">Receipt defaults</h2>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-sm font-medium mb-1">Currency symbol</label>
+          <input name="currency" class="input" value="<%= restaurant.currency || 'Rs' %>" <%= canEdit ? '' : 'disabled' %> />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Default tax %</label>
+          <input name="taxRate" type="number" step="0.01" class="input" value="<%= restaurant.taxRate || 0 %>" <%= canEdit ? '' : 'disabled' %> />
+        </div>
+        <dl class="text-sm text-slate-600 border-t pt-3 mt-3 grid grid-cols-2 gap-y-1">
+          <dt class="text-slate-500">Slug</dt><dd class="font-mono"><%= restaurant.slug %></dd>
+          <dt class="text-slate-500">URL</dt><dd class="truncate"><code>/r/<%= restaurant.slug %></code></dd>
+          <dt class="text-slate-500">Expires</dt><dd><%= restaurant.expiresAt ? new Date(restaurant.expiresAt).toISOString().slice(0,10) : '—' %></dd>
+          <dt class="text-slate-500">Max users</dt><dd><%= restaurant.maxUsers %></dd>
+        </dl>
+      </div>
+    </div>
+
+    <% if (canEdit) { %>
+      <div class="md:col-span-2 flex items-center gap-3">
+        <button class="btn-primary" type="submit">Save changes</button>
+        <a href="<%= rurl('/') %>" class="text-sm text-slate-600 hover:underline">Cancel</a>
+      </div>
+    <% } %>
+  </form>
+</div>

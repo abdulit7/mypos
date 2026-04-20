@@ -2,11 +2,15 @@ const express = require("express");
 const Order = require("../models/Order");
 const { requirePermission } = require("../middleware/auth");
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
+
+function base(req) {
+  return `/r/${req.tenantSlug}`;
+}
 
 router.get("/", requirePermission("orders.view"), async (req, res) => {
   const { q, status, from, to } = req.query;
-  const filter = { restaurant: req.user.restaurant };
+  const filter = { restaurant: req.tenant._id };
   if (status && ["held", "completed", "cancelled"].includes(status)) {
     filter.status = status;
   }
@@ -48,13 +52,13 @@ router.get("/", requirePermission("orders.view"), async (req, res) => {
 router.get("/:id", requirePermission("orders.view"), async (req, res) => {
   const order = await Order.findOne({
     _id: req.params.id,
-    restaurant: req.user.restaurant,
+    restaurant: req.tenant._id,
   })
     .populate("cashier", "name username")
     .lean();
   if (!order) {
     req.flash("error", "Order not found.");
-    return res.redirect("/orders");
+    return res.redirect(`${base(req)}/orders`);
   }
   res.render("orders/show", { title: `Order ${order.invoiceNo}`, order });
 });
@@ -62,7 +66,7 @@ router.get("/:id", requirePermission("orders.view"), async (req, res) => {
 router.get("/:id/print", requirePermission("orders.view"), async (req, res) => {
   const order = await Order.findOne({
     _id: req.params.id,
-    restaurant: req.user.restaurant,
+    restaurant: req.tenant._id,
   })
     .populate("cashier", "name username")
     .lean();
@@ -72,7 +76,7 @@ router.get("/:id/print", requirePermission("orders.view"), async (req, res) => {
   res.render("orders/print", {
     title: `Invoice ${order.invoiceNo}`,
     order,
-    restaurant: req.restaurant,
+    restaurant: req.tenant,
     layout: "layouts/blank",
   });
 });
@@ -82,18 +86,18 @@ router.post(
   requirePermission("orders.cancel"),
   async (req, res) => {
     await Order.findOneAndUpdate(
-      { _id: req.params.id, restaurant: req.user.restaurant },
+      { _id: req.params.id, restaurant: req.tenant._id },
       { status: "cancelled" }
     );
     req.flash("success", "Order cancelled.");
-    res.redirect("back");
+    res.redirect(req.get("Referer") || `${base(req)}/orders`);
   }
 );
 
 router.delete("/:id", requirePermission("orders.view"), async (req, res) => {
   const order = await Order.findOne({
     _id: req.params.id,
-    restaurant: req.user.restaurant,
+    restaurant: req.tenant._id,
   });
   if (order && order.status === "held") {
     await Order.findByIdAndDelete(req.params.id);
@@ -101,7 +105,7 @@ router.delete("/:id", requirePermission("orders.view"), async (req, res) => {
   } else {
     req.flash("error", "Only held orders can be deleted.");
   }
-  res.redirect("back");
+  res.redirect(req.get("Referer") || `${base(req)}/orders`);
 });
 
 module.exports = router;

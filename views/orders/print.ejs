@@ -19,7 +19,7 @@
 
 <div class="no-print bg-white border-b shadow-sm">
   <div class="max-w-xl mx-auto px-4 py-2 flex items-center gap-2">
-    <a href="/orders/<%= order._id %>" class="btn-secondary">&larr; Back</a>
+    <a href="<%= rurl('/orders/' + order._id) %>" class="btn-secondary">&larr; Back</a>
     <button onclick="window.print()" class="btn-primary ml-auto">Print</button>
   </div>
 </div>

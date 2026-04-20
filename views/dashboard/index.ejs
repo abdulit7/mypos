@@ -12,7 +12,7 @@
   <div class="card">
     <div class="text-xs uppercase text-gray-500">Held Orders</div>
     <div class="text-2xl font-bold text-amber-600"><%= stats.heldOrders %></div>
-    <div class="text-xs text-gray-500"><a class="underline" href="/orders?status=held">View held</a></div>
+    <div class="text-xs text-gray-500"><a class="underline" href="<%= rurl('/orders') %>?status=held">View held</a></div>
   </div>
   <div class="card">
     <div class="text-xs uppercase text-gray-500">Catalog</div>
@@ -22,15 +22,15 @@
 </div>
 
 <div class="mt-6 grid gap-4 md:grid-cols-3">
-  <a href="/pos" class="card hover:shadow-md transition">
+  <a href="<%= rurl('/pos') %>" class="card hover:shadow-md transition">
     <div class="text-lg font-semibold">🧾 Start a Sale</div>
     <div class="text-sm text-gray-500">Open the POS terminal.</div>
   </a>
-  <a href="/products/new" class="card hover:shadow-md transition">
+  <a href="<%= rurl('/products/new') %>" class="card hover:shadow-md transition">
     <div class="text-lg font-semibold">➕ Add Product</div>
     <div class="text-sm text-gray-500">Add new menu item with price.</div>
   </a>
-  <a href="/reports" class="card hover:shadow-md transition">
+  <a href="<%= rurl('/reports') %>" class="card hover:shadow-md transition">
     <div class="text-lg font-semibold">📊 Sales Report</div>
     <div class="text-sm text-gray-500">View &amp; export to PDF.</div>
   </a>
@@ -39,7 +39,7 @@
 <div class="mt-6 card">
   <div class="flex items-center justify-between mb-3">
     <h2 class="text-lg font-semibold">Recent Orders</h2>
-    <a href="/orders" class="text-sm text-brand-700 hover:underline">View all</a>
+    <a href="<%= rurl('/orders') %>" class="text-sm text-brand-700 hover:underline">View all</a>
   </div>
   <% if (!recentOrders.length) { %>
     <div class="text-sm text-gray-500">No orders yet.</div>
@@ -55,9 +55,9 @@
             <td class="capitalize"><%= o.orderType %></td>
             <td><%= new Date(o.createdAt).toLocaleString() %></td>
             <td>
-              <a href="/orders/<%= o._id %>" class="text-brand-700 hover:underline">Details</a>
+              <a href="<%= rurl('/orders/' + o._id) %>" class="text-brand-700 hover:underline">Details</a>
               &middot;
-              <a href="/orders/<%= o._id %>/print" target="_blank" class="text-brand-700 hover:underline">Print</a>
+              <a href="<%= rurl('/orders/' + o._id + '/print') %>" target="_blank" class="text-brand-700 hover:underline">Print</a>
             </td>
           </tr>
         <% }); %>

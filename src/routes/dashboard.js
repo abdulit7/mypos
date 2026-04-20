@@ -3,13 +3,13 @@ const Order = require("../models/Order");
 const Product = require("../models/Product");
 const Category = require("../models/Category");
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.get("/", async (req, res) => {
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0);
 
-  const scope = { restaurant: req.user.restaurant };
+  const scope = { restaurant: req.tenant._id };
 
   const [todayAgg, weekAgg, totalOrders, heldOrders, productCount, categoryCount, recentOrders] =
     await Promise.all([

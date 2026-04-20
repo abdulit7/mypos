@@ -2,29 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title><%= title ? title + ' · ' : '' %>Super Admin · <%= appName %></title>
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
+  <link rel="icon" href="/icons/icon-192.svg" />
   <link rel="stylesheet" href="/css/tailwind.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='54' font-size='56'>🛡️</text></svg>" />
 </head>
-<body class="min-h-screen bg-slate-50 text-slate-900">
-  <header class="bg-slate-900 text-white shadow">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-6">
-      <a href="/superadmin" class="flex items-center gap-2 font-bold text-lg">
-        <span>🛡️</span><span>Super Admin</span>
+<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+  <header class="bg-slate-900 text-white shadow sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
+      <a href="/admin" class="flex items-center gap-2 font-bold text-lg">
+        <span class="w-9 h-9 rounded-lg flex items-center justify-center text-lg shadow" style="background: linear-gradient(135deg,#0f172a,#334155)">🛡️</span>
+        <span>Super Admin</span>
       </a>
-      <nav class="flex items-center gap-1 text-sm">
-        <% const navItems = [
-          { href: '/superadmin', label: 'Overview' },
-          { href: '/superadmin/restaurants', label: 'Restaurants' },
-        ]; %>
+
+      <button id="navToggle" type="button" class="ml-auto md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg border border-white/20" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M3 5h14v2H3zM3 9h14v2H3zM3 13h14v2H3z"/></svg>
+      </button>
+
+      <%
+        const navItems = [
+          { href: '/admin', label: 'Overview' },
+          { href: '/admin/restaurants', label: 'Restaurants' },
+        ];
+      %>
+
+      <nav class="hidden md:flex items-center gap-1 ml-2 text-sm">
         <% navItems.forEach(function(item){
-             const active = path === item.href || (item.href !== '/superadmin' && path.startsWith(item.href));
+             const active = path === item.href || (item.href !== '/admin' && path.startsWith(item.href));
         %>
           <a href="<%= item.href %>" class="px-3 py-1.5 rounded-md <%= active ? 'bg-white/20' : 'hover:bg-white/10' %>"><%= item.label %></a>
         <% }); %>
       </nav>
-      <div class="ml-auto flex items-center gap-3 text-sm">
+
+      <div class="ml-auto hidden md:flex items-center gap-3 text-sm">
         <% if (currentUser) { %>
           <span>Hi, <strong><%= currentUser.name %></strong> <span class="text-white/60">(superadmin)</span></span>
           <form action="/logout" method="POST">
@@ -33,14 +46,30 @@
         <% } %>
       </div>
     </div>
+
+    <nav id="mobileNav" class="md:hidden hidden border-t border-white/10 bg-slate-900">
+      <div class="px-4 py-2 flex flex-col gap-1 text-sm">
+        <% navItems.forEach(function(item){
+             const active = path === item.href || (item.href !== '/admin' && path.startsWith(item.href));
+        %>
+          <a href="<%= item.href %>" class="px-3 py-2 rounded-md <%= active ? 'bg-white/20' : 'hover:bg-white/10' %>"><%= item.label %></a>
+        <% }); %>
+        <% if (currentUser) { %>
+          <div class="mt-2 pt-2 border-t border-white/10 flex items-center justify-between">
+            <span class="text-white/70 text-xs"><%= currentUser.name %></span>
+            <form action="/logout" method="POST"><button type="submit" class="text-red-300 text-xs">Sign out</button></form>
+          </div>
+        <% } %>
+      </div>
+    </nav>
   </header>
 
   <main class="max-w-7xl mx-auto px-4 py-6">
     <% if (success && success.length) { %>
-      <div class="mb-4 rounded-md bg-emerald-100 text-emerald-800 px-4 py-2"><%= success.join(' ') %></div>
+      <div class="mb-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-2.5 text-sm"><%= success.join(' ') %></div>
     <% } %>
     <% if (error && error.length) { %>
-      <div class="mb-4 rounded-md bg-red-100 text-red-800 px-4 py-2"><%= error.join(' ') %></div>
+      <div class="mb-4 rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-2.5 text-sm"><%= error.join(' ') %></div>
     <% } %>
     <%- body %>
   </main>
@@ -48,5 +77,16 @@
   <footer class="max-w-7xl mx-auto px-4 py-6 text-xs text-slate-500">
     &copy; <%= new Date().getFullYear() %> <%= appName %> · Super Admin
   </footer>
+
+  <script>
+    (function(){
+      var btn = document.getElementById('navToggle');
+      var nav = document.getElementById('mobileNav');
+      if (btn && nav) btn.addEventListener('click', function(){ nav.classList.toggle('hidden'); });
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function(){ navigator.serviceWorker.register('/sw.js').catch(function(){}); });
+      }
+    })();
+  </script>
 </body>
 </html>

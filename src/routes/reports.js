@@ -4,7 +4,7 @@ const PDFDocument = require("pdfkit");
 const Order = require("../models/Order");
 const { requirePermission } = require("../middleware/auth");
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 function resolveDateRange(query) {
   const now = new Date();
@@ -109,7 +109,7 @@ async function buildSalesReport(query, restaurantId) {
 }
 
 router.get("/", requirePermission("reports.view"), async (req, res) => {
-  const report = await buildSalesReport(req.query, req.user.restaurant);
+  const report = await buildSalesReport(req.query, req.tenant._id);
   res.render("reports/sales", {
     title: "Sales Report",
     report,
@@ -121,7 +121,7 @@ router.get("/", requirePermission("reports.view"), async (req, res) => {
 });
 
 router.get("/sales.pdf", requirePermission("reports.view"), async (req, res) => {
-  const report = await buildSalesReport(req.query, req.user.restaurant);
+  const report = await buildSalesReport(req.query, req.tenant._id);
   const doc = new PDFDocument({ size: "A4", margin: 40 });
   res.setHeader("Content-Type", "application/pdf");
   res.setHeader(
@@ -132,8 +132,8 @@ router.get("/sales.pdf", requirePermission("reports.view"), async (req, res) => 
   );
   doc.pipe(res);
 
-  const title = req.restaurant?.name
-    ? `${req.restaurant.name} — Sales Report`
+  const title = req.tenant?.name
+    ? `${req.tenant.name} — Sales Report`
     : "Sales Report";
   doc.fontSize(20).text(title, { align: "center" });
   doc

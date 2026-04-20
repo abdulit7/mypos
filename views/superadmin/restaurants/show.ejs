@@ -1,14 +1,22 @@
-<div class="flex items-start justify-between mb-4">
-  <div>
-    <h1 class="text-2xl font-bold"><%= restaurant.name %></h1>
-    <p class="text-sm text-slate-500"><%= restaurant.slug %></p>
+<div class="flex items-start justify-between gap-3 mb-4 flex-wrap">
+  <div class="flex items-center gap-3">
+    <% if (restaurant.logoUrl) { %>
+      <img src="<%= restaurant.logoUrl %>" alt="<%= restaurant.name %>" class="w-14 h-14 rounded-xl object-cover border border-slate-200" />
+    <% } else { %>
+      <span class="w-14 h-14 rounded-xl flex items-center justify-center text-2xl text-white shadow" style="background: linear-gradient(135deg, <%= restaurant.themeColor || '#16a34a' %>, #0d9488)">🍗</span>
+    <% } %>
+    <div>
+      <h1 class="text-2xl font-bold"><%= restaurant.name %></h1>
+      <p class="text-sm text-slate-500"><a href="/r/<%= restaurant.slug %>" class="hover:underline" target="_blank">/r/<%= restaurant.slug %></a><% if (restaurant.tagline) { %> · <%= restaurant.tagline %><% } %></p>
+    </div>
   </div>
-  <div class="flex items-center gap-2">
-    <a href="/superadmin/restaurants/<%= restaurant._id %>/edit" class="btn-secondary">Edit</a>
-    <form method="POST" action="/superadmin/restaurants/<%= restaurant._id %>/toggle" class="inline">
+  <div class="flex items-center gap-2 flex-wrap">
+    <a href="/r/<%= restaurant.slug %>/login" target="_blank" class="btn-secondary">Open tenant</a>
+    <a href="/admin/restaurants/<%= restaurant._id %>/edit" class="btn-secondary">Edit</a>
+    <form method="POST" action="/admin/restaurants/<%= restaurant._id %>/toggle" class="inline">
       <button class="btn-secondary" type="submit"><%= restaurant.isActive ? 'Suspend' : 'Activate' %></button>
     </form>
-    <form method="POST" action="/superadmin/restaurants/<%= restaurant._id %>?_method=DELETE" class="inline" onsubmit="return confirm('Delete this restaurant and ALL its data?');">
+    <form method="POST" action="/admin/restaurants/<%= restaurant._id %>?_method=DELETE" class="inline" onsubmit="return confirm('Delete this restaurant and ALL its data?');">
       <button class="bg-red-600 text-white px-3 py-1.5 rounded-md text-sm hover:bg-red-700" type="submit">Delete</button>
     </form>
   </div>
@@ -43,7 +51,7 @@
 <div class="grid md:grid-cols-2 gap-4">
   <div class="bg-white rounded-lg shadow p-4 space-y-3">
     <h2 class="font-semibold">Extend subscription</h2>
-    <form method="POST" action="/superadmin/restaurants/<%= restaurant._id %>/extend" class="flex items-end gap-2">
+    <form method="POST" action="/admin/restaurants/<%= restaurant._id %>/extend" class="flex items-end gap-2">
       <div class="flex-1">
         <label class="block text-sm font-medium mb-1">Add days</label>
         <input name="days" type="number" min="1" value="30" class="input" />
@@ -55,7 +63,7 @@
 
   <div class="bg-white rounded-lg shadow p-4 space-y-3">
     <h2 class="font-semibold">Reset admin password</h2>
-    <form method="POST" action="/superadmin/restaurants/<%= restaurant._id %>/reset-admin" class="flex items-end gap-2">
+    <form method="POST" action="/admin/restaurants/<%= restaurant._id %>/reset-admin" class="flex items-end gap-2">
       <div class="flex-1">
         <label class="block text-sm font-medium mb-1">New password</label>
         <input name="password" type="text" class="input" minlength="4" required />

@@ -3,6 +3,8 @@
     cart: [],
     fromHeldId: null,
   };
+  const BASE = (window.__POS__ && window.__POS__.base) || "";
+  const api = (path) => BASE + path;
 
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => Array.from(document.querySelectorAll(sel));
@@ -173,7 +175,7 @@
     if (!Number(paidField.value)) paidField.value = total.toFixed(2);
     recalc();
     try {
-      const data = await postJson("/pos/sale", buildPayload());
+      const data = await postJson(api("/pos/sale"), buildPayload());
       // Open invoice in new window for printing
       window.open(data.printUrl, "_blank", "width=420,height=700");
       state.cart = [];
@@ -188,12 +190,12 @@
   $("#holdBtn").addEventListener("click", async () => {
     if (!state.cart.length) return alert("Add at least one item.");
     try {
-      const data = await postJson("/pos/hold", buildPayload());
+      const data = await postJson(api("/pos/hold"), buildPayload());
       alert("Order held as " + data.invoiceNo);
       state.cart = [];
       state.fromHeldId = null;
       recalc();
-      window.location.href = "/pos";
+      window.location.href = api("/pos");
     } catch (err) {
       alert("Hold failed: " + err.message);
     }

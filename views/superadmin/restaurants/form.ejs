@@ -1,12 +1,44 @@
 <% const isNew = !restaurant._id; %>
 <h1 class="text-2xl font-bold mb-4"><%= isNew ? 'New Restaurant' : 'Edit Restaurant' %></h1>
 
-<form method="POST" action="<%= isNew ? '/superadmin/restaurants' : '/superadmin/restaurants/' + restaurant._id + '?_method=PUT' %>" class="grid md:grid-cols-2 gap-4">
+<form method="POST" action="<%= isNew ? '/admin/restaurants' : '/admin/restaurants/' + restaurant._id + '?_method=PUT' %>" enctype="multipart/form-data" class="grid md:grid-cols-2 gap-4">
   <div class="bg-white rounded-lg shadow p-4 space-y-3">
     <h2 class="font-semibold">Restaurant details</h2>
     <div>
       <label class="block text-sm font-medium mb-1">Name</label>
       <input name="name" class="input" value="<%= restaurant.name || '' %>" required />
+    </div>
+    <% if (!isNew) { %>
+      <div>
+        <label class="block text-sm font-medium mb-1">Slug (URL)</label>
+        <input class="input bg-slate-100" value="<%= restaurant.slug %>" readonly />
+        <p class="text-xs text-slate-500 mt-1">Login URL: <code>/r/<%= restaurant.slug %>/login</code></p>
+      </div>
+    <% } %>
+    <div>
+      <label class="block text-sm font-medium mb-1">Tagline</label>
+      <input name="tagline" class="input" value="<%= restaurant.tagline || '' %>" placeholder="Fresh food, fast service" />
+    </div>
+    <div class="grid grid-cols-[auto_1fr] gap-3 items-start">
+      <% if (restaurant.logoUrl) { %>
+        <img src="<%= restaurant.logoUrl %>" alt="" class="w-16 h-16 rounded-lg object-cover border border-slate-200" />
+      <% } else { %>
+        <span class="w-16 h-16 rounded-lg flex items-center justify-center text-2xl text-white shadow" style="background: linear-gradient(135deg, <%= restaurant.themeColor || '#16a34a' %>, #0d9488)">🍗</span>
+      <% } %>
+      <div>
+        <label class="block text-sm font-medium mb-1">Logo (max 2 MB)</label>
+        <input type="file" name="logo" accept="image/*" />
+        <p class="text-xs text-slate-500 mt-1">PNG, JPG, WEBP or SVG.</p>
+        <% if (!isNew && restaurant.logoUrl) { %>
+          <form method="POST" action="/admin/restaurants/<%= restaurant._id %>/logo/remove" class="mt-1">
+            <button class="text-xs text-red-600 hover:underline" type="submit">Remove logo</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1">Theme color</label>
+      <input name="themeColor" type="color" class="input h-10 p-1" value="<%= restaurant.themeColor || '#16a34a' %>" />
     </div>
     <div class="grid grid-cols-2 gap-3">
       <div>
@@ -74,6 +106,6 @@
 
   <div class="md:col-span-2 flex items-center gap-3">
     <button class="btn-primary"><%= isNew ? 'Create Restaurant' : 'Save Changes' %></button>
-    <a href="/superadmin/restaurants" class="text-sm text-slate-600 hover:underline">Cancel</a>
+    <a href="/admin/restaurants" class="text-sm text-slate-600 hover:underline">Cancel</a>
   </div>
 </form>
