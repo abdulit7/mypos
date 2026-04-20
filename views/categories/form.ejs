@@ -1,6 +1,6 @@
 <div class="max-w-xl">
   <h1 class="text-2xl font-bold mb-4"><%= title %></h1>
-  <form method="POST" action="<%= category._id ? '/categories/' + category._id + '?_method=PUT' : '/categories' %>" class="card space-y-3">
+  <form method="POST" action="<%= category._id ? rurl('/categories/' + category._id) + '?_method=PUT' : rurl('/categories') %>" class="card space-y-3">
     <div>
       <label class="block text-sm font-medium mb-1">Name</label>
       <input name="name" value="<%= category.name || '' %>" class="input" required />
@@ -15,7 +15,7 @@
     </label>
     <div class="flex gap-2">
       <button class="btn-primary">Save</button>
-      <a href="/categories" class="btn-secondary">Cancel</a>
+      <a href="<%= rurl('/categories') %>" class="btn-secondary">Cancel</a>
     </div>
   </form>
 </div>

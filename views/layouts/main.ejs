@@ -2,60 +2,119 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title><%= title ? title + ' · ' : '' %><%= appName %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title><%= title ? title + ' · ' : '' %><%= (currentRestaurant && currentRestaurant.name) || appName %></title>
+  <meta name="theme-color" content="<%= (currentRestaurant && currentRestaurant.themeColor) || '#16a34a' %>" />
+  <meta name="description" content="Point of sale for <%= (currentRestaurant && currentRestaurant.name) || appName %>" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
+  <link rel="icon" href="/icons/icon-192.svg" />
   <link rel="stylesheet" href="/css/tailwind.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text y='54' font-size='56'>🍗</text></svg>" />
 </head>
-<body class="min-h-screen bg-gray-50 text-gray-900">
-  <header class="bg-gradient-to-r from-brand-600 to-brand-700 text-white shadow">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-6">
-      <a href="/" class="flex items-center gap-2 font-bold text-lg">
-        <span>🍗</span><span><%= appName %></span>
+<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+  <%
+    const tenantSlugLocal = (typeof tenantSlug !== 'undefined' && tenantSlug) || (currentRestaurant && currentRestaurant.slug) || '';
+    const tenantBaseLocal = tenantSlugLocal ? '/r/' + tenantSlugLocal : '';
+    const r = typeof rurl === 'function' ? rurl : (p => (tenantSlugLocal ? tenantBaseLocal + (p && p.startsWith('/') ? p : '/' + (p || '')) : (p || '/')));
+    const accent = (currentRestaurant && currentRestaurant.themeColor) || '#16a34a';
+  %>
+  <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4">
+      <a href="<%= r('/') %>" class="flex items-center gap-2 font-bold text-lg">
+        <% if (currentRestaurant && currentRestaurant.logoUrl) { %>
+          <img src="<%= currentRestaurant.logoUrl %>" alt="<%= currentRestaurant.name %>" class="w-9 h-9 rounded-lg object-cover border border-slate-200" />
+        <% } else { %>
+          <span class="w-9 h-9 rounded-lg flex items-center justify-center text-white text-lg shadow" style="background: linear-gradient(135deg, <%= accent %>, #0d9488)">🍗</span>
+        <% } %>
+        <span class="leading-tight">
+          <span class="block text-slate-900"><%= (currentRestaurant && currentRestaurant.name) || appName %></span>
+          <% if (currentRestaurant && currentRestaurant.tagline) { %>
+            <span class="block text-xs font-normal text-slate-500"><%= currentRestaurant.tagline %></span>
+          <% } %>
+        </span>
       </a>
-      <nav class="flex items-center gap-1 text-sm flex-wrap">
-        <% const navItems = [
-          { href: '/', label: 'Dashboard', perm: null },
-          { href: '/pos', label: 'POS', perm: 'pos.access' },
-          { href: '/orders', label: 'Orders', perm: 'orders.view' },
-          { href: '/products', label: 'Products', perm: 'products.manage' },
-          { href: '/categories', label: 'Categories', perm: 'categories.manage' },
-          { href: '/reports', label: 'Reports', perm: 'reports.view' },
-          { href: '/users', label: 'Users', perm: 'users.manage' },
-        ]; %>
+
+      <button id="navToggle" type="button" class="ml-auto md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 text-slate-600" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M3 5h14v2H3zM3 9h14v2H3zM3 13h14v2H3z"/></svg>
+      </button>
+
+      <%
+        const navItems = [
+          { href: r('/'), label: 'Dashboard', perm: null, match: r('/') },
+          { href: r('/pos'), label: 'POS', perm: 'pos.access', match: r('/pos') },
+          { href: r('/orders'), label: 'Orders', perm: 'orders.view', match: r('/orders') },
+          { href: r('/products'), label: 'Products', perm: 'products.manage', match: r('/products') },
+          { href: r('/categories'), label: 'Categories', perm: 'categories.manage', match: r('/categories') },
+          { href: r('/reports'), label: 'Reports', perm: 'reports.view', match: r('/reports') },
+          { href: r('/users'), label: 'Users', perm: 'users.manage', match: r('/users') },
+          { href: r('/settings'), label: 'Settings', perm: 'users.manage', match: r('/settings') },
+        ];
+      %>
+
+      <nav class="hidden md:flex md:items-center md:gap-1 md:ml-2 text-sm flex-wrap">
         <% navItems.forEach(function(item){
              if (item.perm && !hasPermission(item.perm)) return;
-             const active = path === item.href || (item.href !== '/' && path.startsWith(item.href));
+             const active = path === item.match || (item.match !== r('/') && path.startsWith(item.match));
         %>
-          <a href="<%= item.href %>" class="px-3 py-1.5 rounded-md <%= active ? 'bg-white/20' : 'hover:bg-white/10' %>"><%= item.label %></a>
+          <a href="<%= item.href %>" class="px-3 py-1.5 rounded-md <%= active ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100' %>"><%= item.label %></a>
         <% }); %>
       </nav>
-      <div class="ml-auto flex items-center gap-3 text-sm">
-        <% if (currentRestaurant) { %>
-          <span class="hidden md:inline text-white/80"><%= currentRestaurant.name %></span>
-        <% } %>
+
+      <div class="ml-auto hidden md:flex items-center gap-3 text-sm">
         <% if (currentUser) { %>
-          <span>Hi, <strong><%= currentUser.name %></strong> (<%= currentUser.role %>)</span>
-          <form action="/logout" method="POST">
-            <button type="submit" class="bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-md">Sign out</button>
+          <span class="text-slate-600">Hi, <strong class="text-slate-900"><%= currentUser.name %></strong> <span class="text-xs text-slate-400">(<%= currentUser.role %>)</span></span>
+          <form action="<%= tenantSlugLocal ? r('/logout') : '/logout' %>" method="POST">
+            <button type="submit" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md">Sign out</button>
           </form>
         <% } %>
       </div>
     </div>
+
+    <nav id="mobileNav" class="md:hidden hidden border-t border-slate-200 bg-white">
+      <div class="px-4 py-2 flex flex-col gap-1 text-sm">
+        <% navItems.forEach(function(item){
+             if (item.perm && !hasPermission(item.perm)) return;
+             const active = path === item.match || (item.match !== r('/') && path.startsWith(item.match));
+        %>
+          <a href="<%= item.href %>" class="px-3 py-2 rounded-md <%= active ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-slate-100' %>"><%= item.label %></a>
+        <% }); %>
+        <% if (currentUser) { %>
+          <div class="mt-2 pt-2 border-t border-slate-200 flex items-center justify-between">
+            <span class="text-slate-600 text-xs"><%= currentUser.name %> (<%= currentUser.role %>)</span>
+            <form action="<%= tenantSlugLocal ? r('/logout') : '/logout' %>" method="POST">
+              <button type="submit" class="text-red-600 text-xs">Sign out</button>
+            </form>
+          </div>
+        <% } %>
+      </div>
+    </nav>
   </header>
 
   <main class="max-w-7xl mx-auto px-4 py-6">
     <% if (success && success.length) { %>
-      <div class="mb-4 rounded-md bg-emerald-100 text-emerald-800 px-4 py-2"><%= success.join(' ') %></div>
+      <div class="mb-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-2.5 text-sm"><%= success.join(' ') %></div>
     <% } %>
     <% if (error && error.length) { %>
-      <div class="mb-4 rounded-md bg-red-100 text-red-800 px-4 py-2"><%= error.join(' ') %></div>
+      <div class="mb-4 rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-2.5 text-sm"><%= error.join(' ') %></div>
     <% } %>
     <%- body %>
   </main>
 
-  <footer class="max-w-7xl mx-auto px-4 py-6 text-xs text-gray-500">
-    &copy; <%= new Date().getFullYear() %> <%= appName %>
+  <footer class="max-w-7xl mx-auto px-4 py-6 text-xs text-slate-400">
+    &copy; <%= new Date().getFullYear() %> <%= (currentRestaurant && currentRestaurant.name) || appName %> · Powered by <%= appName %>
   </footer>
+
+  <script>
+    (function(){
+      var btn = document.getElementById('navToggle');
+      var nav = document.getElementById('mobileNav');
+      if (btn && nav) btn.addEventListener('click', function(){ nav.classList.toggle('hidden'); });
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function(){
+          navigator.serviceWorker.register('/sw.js').catch(function(){});
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

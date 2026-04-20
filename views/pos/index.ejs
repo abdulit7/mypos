@@ -126,8 +126,8 @@
                 <div class="text-xs text-gray-500"><%= h.items.length %> items · Rs <%= h.total.toFixed(2) %></div>
               </div>
               <div class="flex gap-2">
-                <a href="/pos?load=<%= h._id %>" class="text-brand-700 hover:underline">Resume</a>
-                <form method="POST" action="/orders/<%= h._id %>?_method=DELETE" onsubmit="return confirm('Remove held order?');">
+                <a href="<%= rurl('/pos') %>?load=<%= h._id %>" class="text-brand-700 hover:underline">Resume</a>
+                <form method="POST" action="<%= rurl('/orders/' + h._id) %>?_method=DELETE" onsubmit="return confirm('Remove held order?');">
                   <button class="text-red-600 hover:underline">✕</button>
                 </form>
               </div>
@@ -142,6 +142,7 @@
 <script>
   window.__POS__ = {
     loadedHeld: <%- JSON.stringify(loadedHeld || null) %>,
+    base: <%- JSON.stringify(tenantBase || '') %>,
   };
 </script>
 <script src="/js/pos.js"></script>

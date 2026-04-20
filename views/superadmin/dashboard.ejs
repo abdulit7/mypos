@@ -1,6 +1,6 @@
 <div class="flex items-center justify-between mb-6">
   <h1 class="text-2xl font-bold">Super Admin Overview</h1>
-  <a href="/superadmin/restaurants/new" class="btn-primary">+ New Restaurant</a>
+  <a href="/admin/restaurants/new" class="btn-primary">+ New Restaurant</a>
 </div>
 
 <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
@@ -38,7 +38,7 @@
       <tbody>
         <% recent.forEach(function(r){ %>
           <tr class="border-t">
-            <td class="px-4 py-2"><a class="text-brand-600 hover:underline" href="/superadmin/restaurants/<%= r._id %>"><%= r.name %></a></td>
+            <td class="px-4 py-2"><a class="text-brand-600 hover:underline" href="/admin/restaurants/<%= r._id %>"><%= r.name %></a></td>
             <td class="px-4 py-2"><%= r.ownerName || '—' %></td>
             <td class="px-4 py-2"><%= r.expiresAt ? new Date(r.expiresAt).toISOString().slice(0,10) : '—' %></td>
             <td class="px-4 py-2"><%= r.isActive ? 'Active' : 'Suspended' %></td>

@@ -22,11 +22,14 @@ const orderRoutes = require("./src/routes/orders");
 const reportRoutes = require("./src/routes/reports");
 const superadminRoutes = require("./src/routes/superadmin");
 const userRoutes = require("./src/routes/users");
+const settingsRoutes = require("./src/routes/settings");
+const rootRoutes = require("./src/routes/root");
 
 const {
   attachUser,
+  resolveRestaurantBySlug,
+  requireTenantMember,
   requireAuth,
-  requireRestaurantUser,
 } = require("./src/middleware/auth");
 
 async function bootstrap() {
@@ -66,15 +69,63 @@ async function bootstrap() {
     next();
   });
 
-  app.use("/", authRoutes);
-  app.use("/superadmin", requireAuth, superadminRoutes);
-  app.use("/", requireAuth, requireRestaurantUser, dashboardRoutes);
-  app.use("/categories", requireAuth, requireRestaurantUser, categoryRoutes);
-  app.use("/products", requireAuth, requireRestaurantUser, productRoutes);
-  app.use("/pos", requireAuth, requireRestaurantUser, posRoutes);
-  app.use("/orders", requireAuth, requireRestaurantUser, orderRoutes);
-  app.use("/reports", requireAuth, requireRestaurantUser, reportRoutes);
-  app.use("/users", requireAuth, requireRestaurantUser, userRoutes);
+  // Landing + auth chooser routes (public)
+  app.use("/", rootRoutes);
+  // Per-restaurant login / logout (public)
+  app.use("/r/:slug", resolveRestaurantBySlug, authRoutes);
+
+  // Super admin namespace
+  app.use("/admin", superadminRoutes);
+
+  // Everything tenant-scoped lives under /r/:slug/... and is resolved by slug.
+  app.use(
+    "/r/:slug",
+    resolveRestaurantBySlug,
+    requireTenantMember,
+    dashboardRoutes
+  );
+  app.use(
+    "/r/:slug/categories",
+    resolveRestaurantBySlug,
+    requireTenantMember,
+    categoryRoutes
+  );
+  app.use(
+    "/r/:slug/products",
+    resolveRestaurantBySlug,
+    requireTenantMember,
+    productRoutes
+  );
+  app.use(
+    "/r/:slug/pos",
+    resolveRestaurantBySlug,
+    requireTenantMember,
+    posRoutes
+  );
+  app.use(
+    "/r/:slug/orders",
+    resolveRestaurantBySlug,
+    requireTenantMember,
+    orderRoutes
+  );
+  app.use(
+    "/r/:slug/reports",
+    resolveRestaurantBySlug,
+    requireTenantMember,
+    reportRoutes
+  );
+  app.use(
+    "/r/:slug/users",
+    resolveRestaurantBySlug,
+    requireTenantMember,
+    userRoutes
+  );
+  app.use(
+    "/r/:slug/settings",
+    resolveRestaurantBySlug,
+    requireTenantMember,
+    settingsRoutes
+  );
 
   app.use((req, res) => {
     res.status(404).render("404", { title: "Not Found" });

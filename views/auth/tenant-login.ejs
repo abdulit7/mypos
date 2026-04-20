@@ -1,0 +1,53 @@
+<%
+  const accent = (tenant && tenant.themeColor) || '#16a34a';
+%>
+<div class="min-h-screen flex items-center justify-center px-4 py-10"
+     style="background: radial-gradient(1200px 600px at 0% 0%, <%= accent %>22, transparent 60%), radial-gradient(1200px 600px at 100% 100%, #0d948822, transparent 60%), #0f172a;">
+  <div class="w-full max-w-md">
+    <div class="text-center mb-6 text-white">
+      <% if (tenant.logoUrl) { %>
+        <img src="<%= tenant.logoUrl %>" alt="<%= tenant.name %>" class="w-20 h-20 rounded-2xl mx-auto object-cover shadow-lg border-2 border-white/30" />
+      <% } else { %>
+        <div class="w-20 h-20 rounded-2xl mx-auto flex items-center justify-center text-5xl shadow-lg border-2 border-white/30"
+             style="background: linear-gradient(135deg, <%= accent %>, #0d9488)">🍗</div>
+      <% } %>
+      <h1 class="mt-4 text-2xl font-bold"><%= tenant.name %></h1>
+      <% if (tenant.tagline) { %>
+        <p class="text-sm text-white/70 mt-1"><%= tenant.tagline %></p>
+      <% } %>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-2xl p-6">
+      <h2 class="text-lg font-semibold text-slate-900">Sign in to continue</h2>
+      <p class="text-sm text-slate-500 mb-4">Use your restaurant account.</p>
+
+      <% if (error && error.length) { %>
+        <div class="mb-3 rounded-md bg-red-50 border border-red-200 text-red-800 px-3 py-2 text-sm"><%= error.join(' ') %></div>
+      <% } %>
+      <% if (success && success.length) { %>
+        <div class="mb-3 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-2 text-sm"><%= success.join(' ') %></div>
+      <% } %>
+
+      <form method="POST" action="/r/<%= tenant.slug %>/login" class="space-y-3">
+        <div>
+          <label class="block text-sm font-medium mb-1 text-slate-700">Username</label>
+          <input name="username" class="input" autocomplete="username" autofocus required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1 text-slate-700">Password</label>
+          <input name="password" type="password" class="input" autocomplete="current-password" required />
+        </div>
+        <button class="btn-primary w-full" style="background: <%= accent %>;">Sign in</button>
+      </form>
+
+      <div class="mt-5 text-xs text-slate-500 text-center leading-5 border-t pt-3">
+        <div>Demo: <code>admin / admin123</code> · <code>cashier / cashier123</code></div>
+        <div class="mt-1"><a href="/" class="text-slate-700 hover:underline">&larr; Choose a different restaurant</a></div>
+      </div>
+    </div>
+
+    <div class="mt-4 text-center text-xs text-white/60">
+      Super admin? <a href="/admin/login" class="text-white/90 hover:underline">Sign in here</a>.
+    </div>
+  </div>
+</div>
