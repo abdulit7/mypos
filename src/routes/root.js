@@ -3,10 +3,25 @@ const Restaurant = require("../models/Restaurant");
 
 const router = express.Router();
 
-// Landing page: shows a chooser of restaurants + a link to the super-admin login.
-// If the user is already signed in, forwards them to their restaurant dashboard
-// or the super-admin console.
+// Marketing landing (public-facing single-page site advertising the product).
+// Signed-in users are forwarded to their restaurant / super-admin console so
+// they don't land on the marketing page by accident.
 router.get("/", async (req, res) => {
+  if (req.user && req.user.role === "superadmin") {
+    return res.redirect("/admin/restaurants");
+  }
+  if (req.user && req.user.restaurant && req.restaurant && req.restaurant.slug) {
+    return res.redirect(`/r/${req.restaurant.slug}`);
+  }
+  res.render("marketing/index", {
+    title: "Food Point POS — Modern Point of Sale for Restaurants",
+    layout: "layouts/marketing",
+  });
+});
+
+// Restaurant chooser (formerly /): lists active tenants so a cashier or admin
+// can pick the restaurant they belong to and reach its login page.
+router.get("/restaurants", async (req, res) => {
   if (req.user && req.user.role === "superadmin") {
     return res.redirect("/admin/restaurants");
   }
@@ -18,7 +33,7 @@ router.get("/", async (req, res) => {
     .select("name slug logoUrl tagline")
     .lean();
   res.render("landing/index", {
-    title: "Welcome",
+    title: "Choose your restaurant",
     layout: "layouts/blank",
     restaurants,
   });
