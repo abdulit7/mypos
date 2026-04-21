@@ -1,0 +1,378 @@
+<!-- NAV -->
+<header class="sticky top-0 z-30 backdrop-blur-md bg-[#070b17]/75 border-b border-white/5">
+  <div class="max-w-7xl mx-auto px-5 py-3 flex items-center gap-3">
+    <a href="/" class="flex items-center gap-2">
+      <span class="w-9 h-9 rounded-xl flex items-center justify-center text-lg shadow-lg"
+            style="background: linear-gradient(135deg,#22c55e,#0d9488);">🍗</span>
+      <span class="font-bold tracking-tight">Food Point <span class="text-emerald-400">POS</span></span>
+    </a>
+    <nav id="navMenu" class="hidden md:flex items-center gap-6 ml-8 text-sm text-white/70">
+      <a href="#features" class="hover:text-white transition">Features</a>
+      <a href="#how" class="hover:text-white transition">How it works</a>
+      <a href="#pricing" class="hover:text-white transition">Pricing</a>
+      <a href="#faq" class="hover:text-white transition">FAQ</a>
+    </nav>
+    <div class="ml-auto flex items-center gap-2">
+      <a href="/restaurants" class="hidden sm:inline-flex text-sm px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10">Live demo</a>
+      <a href="#pricing" class="text-sm px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-[#04130b] font-semibold transition">Get started</a>
+      <button id="navToggle" class="md:hidden p-2 rounded-lg hover:bg-white/10" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="relative overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none">
+    <span class="blob"    style="width:520px;height:520px;background:#10b981;top:-120px;left:-120px;"></span>
+    <span class="blob b2" style="width:460px;height:460px;background:#06b6d4;top:40px;right:-140px;opacity:.45;"></span>
+    <span class="blob b3" style="width:380px;height:380px;background:#a78bfa;bottom:-160px;left:30%;opacity:.35;"></span>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.12),_transparent_60%)]"></div>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-5 pt-16 md:pt-24 pb-20 md:pb-28 grid lg:grid-cols-12 gap-12 items-center">
+    <div class="lg:col-span-7 reveal">
+      <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-emerald-400/10 border border-emerald-400/30 text-emerald-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 dot-pulse"></span>
+        New · Works online &amp; offline (installable PWA)
+      </span>
+      <h1 class="mt-5 text-4xl md:text-6xl font-black leading-[1.05] tracking-tight">
+        Sell more <span class="grad-text">
+          <span id="rotWord" class="caret">Biryani</span>
+        </span><br/>
+        with a <span class="text-emerald-400">modern POS</span><br/>
+        built for restaurants.
+      </h1>
+      <p class="mt-6 text-lg text-white/70 max-w-xl">
+        Food Point POS runs on any device — desktop, tablet, or phone.
+        Online or offline. One login per restaurant, separate data, separate branding.
+        Sale to print in under 10 seconds.
+      </p>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="#pricing" class="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-[#04130b] font-semibold transition shadow-lg shadow-emerald-500/30">
+          Start 14-day trial →
+        </a>
+        <a href="/restaurants" class="px-5 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 transition">
+          Open live demo
+        </a>
+      </div>
+
+      <dl class="mt-10 grid grid-cols-3 gap-4 max-w-md">
+        <div>
+          <dt class="text-2xl font-bold text-emerald-400">10s</dt>
+          <dd class="text-xs text-white/60 mt-1">avg. sale to print</dd>
+        </div>
+        <div>
+          <dt class="text-2xl font-bold text-cyan-300">99.9%</dt>
+          <dd class="text-xs text-white/60 mt-1">uptime &amp; offline-ready</dd>
+        </div>
+        <div>
+          <dt class="text-2xl font-bold text-violet-300">∞</dt>
+          <dd class="text-xs text-white/60 mt-1">restaurants per account</dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- POS MOCKUP (pure CSS/SVG, no external assets) -->
+    <div class="lg:col-span-5 reveal">
+      <div class="relative mx-auto w-full max-w-md">
+        <div class="absolute -inset-2 bg-gradient-to-tr from-emerald-400/30 via-cyan-400/20 to-fuchsia-400/30 blur-2xl rounded-3xl"></div>
+        <div class="relative bg-slate-900/80 border border-white/10 rounded-2xl shadow-2xl p-4 backdrop-blur">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
+            <div class="ml-auto text-[11px] text-white/60">food-point-demo · POS</div>
+          </div>
+          <!-- Category tabs -->
+          <div class="flex gap-1.5 mb-3 overflow-hidden">
+            <span class="px-2.5 py-1 text-[11px] rounded-md bg-emerald-500/90 text-[#04130b] font-semibold">BBQ</span>
+            <span class="px-2.5 py-1 text-[11px] rounded-md bg-white/10">Biryani</span>
+            <span class="px-2.5 py-1 text-[11px] rounded-md bg-white/10">Karahi</span>
+            <span class="px-2.5 py-1 text-[11px] rounded-md bg-white/10">Drinks</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <% const mockItems = [
+              {n:'Beef Biryani', p:'Rs 400', c:'#0d9488'},
+              {n:'Chicken Karahi', p:'Rs 950', c:'#ea580c'},
+              {n:'Seekh Kebab', p:'Rs 350', c:'#dc2626'},
+              {n:'Malai Boti', p:'Rs 550', c:'#7c3aed'},
+              {n:'Pepsi 500ml', p:'Rs 120', c:'#2563eb'},
+              {n:'Kheer', p:'Rs 180', c:'#db2777'},
+            ]; mockItems.forEach(function(it){ %>
+              <div class="rounded-lg bg-white/5 border border-white/10 p-2 hover:bg-white/10 transition">
+                <div class="h-10 rounded mb-1" style="background: linear-gradient(135deg, <%= it.c %>, #0f172a)"></div>
+                <div class="text-[11px] font-semibold leading-tight"><%= it.n %></div>
+                <div class="text-[10px] text-emerald-300"><%= it.p %></div>
+              </div>
+            <% }); %>
+          </div>
+          <!-- Cart -->
+          <div class="mt-3 rounded-lg bg-black/40 border border-white/10 p-3 space-y-1.5 text-xs">
+            <div class="flex items-center justify-between"><span>Beef Biryani × 2</span><span class="font-semibold">Rs 800.00</span></div>
+            <div class="flex items-center justify-between"><span>Chicken Karahi × 1</span><span class="font-semibold">Rs 950.00</span></div>
+            <div class="flex items-center justify-between"><span>Pepsi 500ml × 2</span><span class="font-semibold">Rs 240.00</span></div>
+            <hr class="border-white/10 my-1"/>
+            <div class="flex items-center justify-between text-emerald-300 font-bold"><span>Total</span><span>Rs 1,990.00</span></div>
+          </div>
+          <button class="mt-3 w-full rounded-lg bg-emerald-500 hover:bg-emerald-400 py-2 text-[#04130b] font-bold text-sm transition shadow-lg shadow-emerald-500/30">
+            Pay &amp; Print — Rs 1,990.00
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trusted-by marquee (generic placeholder rows so it still looks alive) -->
+  <div class="relative border-y border-white/5 bg-black/20">
+    <div class="marquee py-4">
+      <div class="marquee-track text-white/40 text-xs uppercase tracking-[0.3em]">
+        <span>· BBQ Shacks &amp; Biryani Houses</span>
+        <span>· Karahi &amp; Tikka Corners</span>
+        <span>· Pizza &amp; Fast-Food Stands</span>
+        <span>· Multi-branch Chains</span>
+        <span>· Cafés &amp; Dessert Bars</span>
+        <span>· Shawarma &amp; Grill Outlets</span>
+        <!-- duplicated for seamless loop -->
+        <span>· BBQ Shacks &amp; Biryani Houses</span>
+        <span>· Karahi &amp; Tikka Corners</span>
+        <span>· Pizza &amp; Fast-Food Stands</span>
+        <span>· Multi-branch Chains</span>
+        <span>· Cafés &amp; Dessert Bars</span>
+        <span>· Shawarma &amp; Grill Outlets</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="relative py-24">
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="max-w-2xl reveal">
+      <div class="text-xs tracking-[0.2em] uppercase text-emerald-300">Built for the floor</div>
+      <h2 class="mt-3 text-3xl md:text-5xl font-black tracking-tight">Everything a restaurant POS needs — in one tab.</h2>
+      <p class="mt-4 text-white/70">From the cashier ringing up a family meal to the owner checking last month's revenue, every screen is designed to be fast, obvious, and beautiful.</p>
+    </div>
+
+    <div class="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-5 reveal-stagger">
+      <% const features = [
+        { title:'Lightning-fast POS', desc:'Tap a product, adjust quantity, take payment, print — in under 10 seconds.', icon:`<svg width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M13 2 4 14h7l-1 8 9-12h-7z'/></svg>`, color:'#34d399' },
+        { title:'Works offline',       desc:'Installable as a PWA. If the internet dies at rush hour, your POS keeps running and syncs later.', icon:`<svg width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M5 12a7 7 0 0 1 14 0M2 12a10 10 0 0 1 20 0M8.5 15.5a3.5 3.5 0 0 1 7 0M12 20h.01'/></svg>`, color:'#22d3ee' },
+        { title:'Multi-restaurant',   desc:'One account, many restaurants. Each gets its own URL, logo, and users — zero data overlap.', icon:`<svg width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M3 21V9l9-6 9 6v12M9 21v-8h6v8'/></svg>`, color:'#a78bfa' },
+        { title:'Roles &amp; permissions', desc:'Admin, cashier, or custom. Gate the POS, reports, users, or products exactly as you need.', icon:`<svg width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M12 2 4 5v7c0 5 3.5 9 8 10 4.5-1 8-5 8-10V5z'/></svg>`, color:'#f472b6' },
+        { title:'Receipts &amp; reports', desc:'80mm thermal-ready invoices, one-click PDF sales reports, per-day / per-category breakdowns.', icon:`<svg width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M6 2h12v20l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h4'/></svg>`, color:'#fb923c' },
+        { title:'Branding per restaurant', desc:'Upload a logo, set a theme color, address, tagline. Each tenant gets its own login page.', icon:`<svg width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8'><path d='M12 2v4m0 12v4M2 12h4m12 0h4M5 5l3 3m8 8 3 3M5 19l3-3m8-8 3-3'/></svg>`, color:'#f59e0b' },
+      ]; features.forEach(function(f){ %>
+        <div class="card-tilt rounded-2xl p-6 bg-white/[0.04] border border-white/10 backdrop-blur">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
+               style="background: linear-gradient(135deg, <%= f.color %>33, <%= f.color %>10); color: <%= f.color %>;">
+            <%- f.icon %>
+          </div>
+          <div class="text-lg font-bold"><%- f.title %></div>
+          <p class="mt-2 text-sm text-white/65 leading-relaxed"><%- f.desc %></p>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<!-- SPLIT: ONLINE vs OFFLINE -->
+<section class="relative py-20 bg-gradient-to-b from-transparent via-emerald-900/10 to-transparent">
+  <div class="max-w-7xl mx-auto px-5 grid lg:grid-cols-2 gap-10 items-stretch">
+    <div class="reveal rounded-3xl p-8 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 border border-emerald-400/20">
+      <div class="text-xs tracking-[0.2em] uppercase text-emerald-300 mb-3">Online</div>
+      <h3 class="text-2xl md:text-3xl font-black tracking-tight">Cloud-hosted. Same data on every device.</h3>
+      <ul class="mt-5 space-y-3 text-white/75 text-sm">
+        <li class="flex gap-2"><span class="text-emerald-400">✓</span> Own URL per restaurant: <code class="text-emerald-300">/r/your-restaurant</code></li>
+        <li class="flex gap-2"><span class="text-emerald-400">✓</span> Real-time held orders, sync across tablets &amp; counter</li>
+        <li class="flex gap-2"><span class="text-emerald-400">✓</span> Super-admin console for owners with multiple branches</li>
+        <li class="flex gap-2"><span class="text-emerald-400">✓</span> Encrypted sessions, role-based permissions built-in</li>
+      </ul>
+    </div>
+    <div class="reveal rounded-3xl p-8 bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 border border-violet-400/20">
+      <div class="text-xs tracking-[0.2em] uppercase text-violet-300 mb-3">Offline</div>
+      <h3 class="text-2xl md:text-3xl font-black tracking-tight">Installable PWA. Runs even when the Wi-Fi drops.</h3>
+      <ul class="mt-5 space-y-3 text-white/75 text-sm">
+        <li class="flex gap-2"><span class="text-violet-300">✓</span> One-tap install on desktop &amp; mobile — no app store</li>
+        <li class="flex gap-2"><span class="text-violet-300">✓</span> Cached UI, fonts, and menu — boots instantly offline</li>
+        <li class="flex gap-2"><span class="text-violet-300">✓</span> Full-screen on tablet; acts just like a native app</li>
+        <li class="flex gap-2"><span class="text-violet-300">✓</span> Thermal invoice print works on any connected printer</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="relative py-24">
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="max-w-2xl reveal">
+      <div class="text-xs tracking-[0.2em] uppercase text-cyan-300">In 3 steps</div>
+      <h2 class="mt-3 text-3xl md:text-5xl font-black tracking-tight">From signed up to selling, in under 10 minutes.</h2>
+    </div>
+
+    <div class="mt-12 grid md:grid-cols-3 gap-5 reveal-stagger">
+      <% const steps = [
+        { n:'01', t:'Sign up', d:'Create your account. Your super-admin console is ready on first login.' },
+        { n:'02', t:'Add your restaurant', d:'Give it a name, logo, address, and theme color. Get a unique URL instantly.' },
+        { n:'03', t:'Start selling', d:'Seed menu, create cashier users, and open the POS. Print the first invoice.' },
+      ]; steps.forEach(function(s,i){ %>
+        <div class="relative rounded-2xl p-6 bg-white/[0.03] border border-white/10">
+          <div class="text-5xl font-black text-transparent" style="-webkit-text-stroke: 1px rgba(52,211,153,.6);"><%= s.n %></div>
+          <div class="mt-3 text-xl font-bold"><%= s.t %></div>
+          <p class="mt-2 text-sm text-white/65"><%= s.d %></p>
+          <% if (i < 2) { %>
+            <div class="hidden md:block absolute top-10 -right-4 text-emerald-400/60 text-3xl">→</div>
+          <% } %>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="relative py-24 bg-gradient-to-b from-transparent to-black/40">
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="max-w-2xl reveal mx-auto text-center">
+      <div class="text-xs tracking-[0.2em] uppercase text-emerald-300">Pricing</div>
+      <h2 class="mt-3 text-3xl md:text-5xl font-black tracking-tight">Simple plans. Cancel anytime.</h2>
+      <p class="mt-4 text-white/70">All plans include online &amp; offline POS, printable invoices, and the super-admin console.</p>
+    </div>
+
+    <div class="mt-12 grid md:grid-cols-3 gap-5 items-stretch reveal-stagger">
+      <% const plans = [
+        {
+          name:'Starter', price:'Rs 0', per:'/ month', cta:'Try free',
+          blurb:'Perfect to kick the tires on one outlet.',
+          features:['1 restaurant','2 user accounts','Unlimited products','Held orders &amp; POS','PDF sales report'],
+          accent:'#34d399'
+        },
+        {
+          name:'Pro', price:'Rs 2,999', per:'/ month', cta:'Start trial',
+          blurb:'For most single-location restaurants.',
+          features:['1 restaurant','10 user accounts','Role-based permissions','Thermal invoices (80mm)','Priority support','Custom branding &amp; theme'],
+          accent:'#22d3ee', highlight:true
+        },
+        {
+          name:'Chain', price:'Rs 7,999', per:'/ month', cta:'Contact sales',
+          blurb:'For owners running multiple branches.',
+          features:['Up to 5 restaurants','50 users','Per-branch reports','Super-admin console','Dedicated onboarding','SLA &amp; backups'],
+          accent:'#a78bfa'
+        },
+      ]; plans.forEach(function(p){ %>
+        <div class="relative rounded-3xl p-7 bg-white/[0.04] border <%= p.highlight ? 'border-emerald-400/50' : 'border-white/10' %> overflow-hidden card-tilt">
+          <% if (p.highlight) { %>
+            <div class="absolute top-0 right-0 text-[10px] tracking-widest uppercase px-2 py-1 bg-emerald-400 text-[#04130b] font-bold rounded-bl-lg">Most popular</div>
+            <div class="absolute -inset-20 bg-emerald-400/10 blur-3xl rounded-full"></div>
+          <% } %>
+          <div class="relative">
+            <div class="text-sm tracking-widest uppercase" style="color: <%= p.accent %>;"><%= p.name %></div>
+            <div class="mt-2 flex items-end gap-1">
+              <span class="text-4xl font-black"><%= p.price %></span>
+              <span class="text-white/60 text-sm mb-1"><%= p.per %></span>
+            </div>
+            <p class="mt-2 text-sm text-white/65"><%= p.blurb %></p>
+            <ul class="mt-5 space-y-2 text-sm text-white/80">
+              <% p.features.forEach(function(f){ %>
+                <li class="flex gap-2"><span style="color:<%= p.accent %>">✓</span><span><%- f %></span></li>
+              <% }); %>
+            </ul>
+            <a href="/restaurants" class="mt-6 block text-center px-4 py-2.5 rounded-xl font-semibold transition
+              <%= p.highlight ? 'bg-emerald-500 hover:bg-emerald-400 text-[#04130b] shadow-lg shadow-emerald-500/30' : 'bg-white/10 hover:bg-white/15 border border-white/10' %>">
+              <%= p.cta %> →
+            </a>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+
+    <div class="mt-6 text-center text-xs text-white/50">Prices shown in PKR. VAT/taxes applied at checkout where applicable.</div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL / QUOTE -->
+<section class="relative py-20">
+  <div class="max-w-4xl mx-auto px-5 reveal">
+    <blockquote class="relative rounded-3xl p-10 bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 border border-white/10">
+      <div class="text-6xl leading-none text-emerald-400/60">"</div>
+      <p class="text-xl md:text-2xl font-medium leading-relaxed -mt-4">
+        We ran two restaurants on two laptops and a phone, and every counter stayed in sync.
+        The printable invoice is pixel-perfect on our 80 mm thermal printer, and the cashier can't touch the reports. That's exactly what we needed.
+      </p>
+      <div class="mt-5 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-[#04130b]" style="background: linear-gradient(135deg,#34d399,#22d3ee);">HS</div>
+        <div>
+          <div class="font-semibold">Hafiz Salam</div>
+          <div class="text-xs text-white/60">Owner · Food Point Demo + Karachi Grill</div>
+        </div>
+      </div>
+    </blockquote>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="relative py-24">
+  <div class="max-w-4xl mx-auto px-5">
+    <div class="reveal text-center">
+      <div class="text-xs tracking-[0.2em] uppercase text-emerald-300">FAQ</div>
+      <h2 class="mt-3 text-3xl md:text-5xl font-black tracking-tight">Questions, answered.</h2>
+    </div>
+    <div class="mt-12 space-y-3 reveal">
+      <% const faqs = [
+        { q:'Does it really work offline?', a:'Yes. Food Point POS is an installable Progressive Web App — once installed, the UI, menu, and fonts are cached. You can ring up sales on a tablet even when the internet is down; orders sync when you\'re back online.' },
+        { q:'Can I run more than one restaurant?', a:'Absolutely. The super-admin console lets you create and manage any number of restaurants. Each gets its own URL (like /r/your-restaurant), its own users, its own menu, and its own branding. Data never crosses between tenants.' },
+        { q:'What about cashiers — can I restrict what they see?', a:'Cashiers can be locked down to only the POS (sale and hold). Managers and admins can also be granted granular permissions — products, categories, reports, users — one checkbox at a time.' },
+        { q:'Does it print to a thermal printer?', a:'The invoice view is laid out for 80 mm rolls. Any printer that your browser can print to works (network or USB). For desktop Chrome and iPad Safari we\'ve tested Epson, Xprinter, and Rongta models.' },
+        { q:'Do I have to install anything on my computer?', a:'No native install. Food Point POS runs in any modern browser. If you want the full-screen "app" feel, tap Install on Chrome/Edge (desktop) or Add to Home Screen on mobile Safari.' },
+        { q:'How do I try it?', a:'Hit the Live demo button in the nav — it\'ll drop you on the restaurant chooser. Pick a demo tenant, sign in as admin/admin123 or cashier/cashier123, and you\'re in.' },
+      ]; faqs.forEach(function(f,i){ %>
+        <details class="group rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+          <summary class="flex items-center gap-4">
+            <span class="flex-1 font-semibold"><%= f.q %></span>
+            <svg class="faq-chev text-emerald-300" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </summary>
+          <p class="mt-3 text-white/70 leading-relaxed text-sm"><%= f.a %></p>
+        </details>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="relative py-24">
+  <div class="max-w-5xl mx-auto px-5 reveal">
+    <div class="relative rounded-3xl p-10 md:p-14 bg-gradient-to-br from-emerald-500 to-teal-600 text-[#04130b] overflow-hidden">
+      <div class="absolute -inset-24 opacity-30" style="background: radial-gradient(600px 200px at 0% 0%, #fff, transparent 60%);"></div>
+      <div class="relative flex flex-col md:flex-row items-start md:items-center gap-6">
+        <div class="flex-1">
+          <div class="text-xs tracking-[0.2em] uppercase opacity-70">Ready when you are</div>
+          <h3 class="mt-2 text-3xl md:text-4xl font-black tracking-tight">Open your POS in the next 10 minutes.</h3>
+          <p class="mt-3 opacity-80 max-w-xl">Start with the demo, or sign up and we'll have your restaurant live the same day.</p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <a href="/restaurants" class="px-5 py-3 rounded-xl bg-[#04130b] text-white font-semibold hover:bg-black transition">Open live demo</a>
+          <a href="mailto:hello@foodpoint.pos?subject=Sign%20me%20up" class="px-5 py-3 rounded-xl bg-white/90 hover:bg-white text-[#04130b] font-semibold transition">Talk to sales</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="relative border-t border-white/5 py-10 text-sm text-white/60">
+  <div class="max-w-7xl mx-auto px-5 flex flex-col md:flex-row items-center gap-4">
+    <div class="flex items-center gap-2">
+      <span class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: linear-gradient(135deg,#22c55e,#0d9488);">🍗</span>
+      <span class="text-white/80 font-semibold">Food Point POS</span>
+    </div>
+    <div class="flex items-center gap-5">
+      <a href="#features" class="hover:text-white">Features</a>
+      <a href="#pricing" class="hover:text-white">Pricing</a>
+      <a href="#faq" class="hover:text-white">FAQ</a>
+      <a href="/restaurants" class="hover:text-white">Live demo</a>
+      <a href="/admin/login" class="hover:text-white">Super admin</a>
+    </div>
+    <div class="md:ml-auto">© <%= new Date().getFullYear() %> Food Point POS · Built with care for restaurants.</div>
+  </div>
+</footer>
